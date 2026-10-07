@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我是春暖花开，欢迎访问此网站</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #ffffff;
+    color: #111111;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 80px 24px;
+  }
+
+  /* 顶部：头像 + 名字 + 联系方式 */
+  .header {
+    text-align: center;
+  }
+
+  .avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto 24px;
+    border: 1px solid #e5e5e5;
+  }
+
+  .name {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .title {
+    font-size: 15px;
+    color: #666666;
+    margin-top: 6px;
+  }
+
+  .contact {
+    margin-top: 20px;
+    font-size: 15px;
+    color: #444444;
+  }
+
+  .contact a {
+    color: #444444;
+    text-decoration: none;
+    border-bottom: 1px solid #dddddd;
+  }
+
+  .contact a:hover {
+    border-bottom-color: #444444;
+  }
+
+  .contact span {
+    margin: 0 8px;
+    color: #cccccc;
+  }
+
+  /* 分隔线 */
+  hr {
+    border: none;
+    border-top: 1px solid #eeeeee;
+    margin: 48px 0;
+  }
+
+  /* 底部：GitHub */
+  .links {
+    text-align: center;
+  }
+
+  .links-title {
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #999999;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .links a {
+    display: inline-block;
+    color: #111111;
+    text-decoration: none;
+    font-size: 16px;
+    border-bottom: 1px solid #111111;
+    padding-bottom: 2px;
+  }
+
+  .links a:hover {
+    color: #666666;
+    border-bottom-color: #666666;
+  }
+
+  /* 三个 GitHub 链接的列表 */
+  .github-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .github-list li {
+    margin-bottom: 14px;
+  }
+
+  .github-list li:last-child {
+    margin-bottom: 0;
+  }
+
+  /* 手机端微调 */
+  @media (max-width: 480px) {
+    .container {
+      padding: 48px 20px;
+    }
+    .avatar {
+      width: 96px;
+      height: 96px;
+    }
+    .name {
+      font-size: 22px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- ============ 上半部分：头像 / 名字 / 联系方式 ============ -->
+    <header class="header">
+
+      <!-- 头像：把 src 换成你自己的图片地址，或直接放同目录下的 avatar.jpg -->
+      <img class="avatar" src="avatar.jpg" alt="我的头像">
+
+      <h1 class="name">春暖花开</h1>
+
+      <p class="title">我是春暖花开，别的......没了</p>
+
+      <p class="contact">
+        <!-- 邮箱 -->
+        <a href="mailto:2317245083@qq.com">2317245083@qq.com</a>
+        <span>·</span>
+        <span>QQ号也是这个，swfb_otmopera微信不常看</span>
+      </p>
+
+    </header>
+
+    <hr>
+
+    <!-- ============ 下半部分：GitHub 链接（三个） ============ -->
+    <section class="links">
+      <p class="links-title">GitHub</p>
+
+      <ul class="github-list">
+        <li>
+          <a href="https://github.com/yinfang949-bit/Uma-Chat/" target="_blank" rel="noopener">
+            关于Uma-Chat 一个聊天工具
+          </a>
+        </li>
+        <li>
+          <a href="https://github.com/yinfang949-bit/SWFB-biliclient" target="_blank" rel="noopener">
+            关于swfb-biliclient 一个极简的b站第三方客户端 优化了服务器连接
+          </a>
+        </li>
+        <li>
+          <a href="https://github.com/yinfang949-bit/swfb-music" target="_blank" rel="noopener">
+            关于swfb-music 一个轻量化的本地音乐播放器
+          </a>
+        </li>
+      </li>
+         <a href="http://hk1.afrp.net:10022" target="_blank" rel="noopener">
+            点击此处浏览Uma chat网页版
+          </a>
+        </li>
+      </ul>
+    </section>
+
+  </div>
+
+</body>
+</html>
