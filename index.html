@@ -2,197 +2,382 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>我是春暖花开，欢迎访问此网站</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FDFCFF">
+<title>Uma-Chat · 消息</title>
+<link rel="icon" href="data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2048%2048'><rect%20x='4'%20y='4'%20width='40'%20height='40'%20rx='20'%20fill='%236750A4'/><path%20d='M15%2016h18a3%203%200%200%201%203%203v7a3%203%200%200%201-3%203h-9l-6%206v-6h-3a3%203%200%200%201-3-3v-7a3%203%200%200%201%203-3z'%20fill='%23fff'/></svg>">
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+/* ===== Pixel 风通知 ===== */
+#pixel-noti-wrap{
+  position:fixed; top:0; left:0; right:0; z-index:99999;
+  display:flex; flex-direction:column; align-items:center;
+  padding:10px 12px 0; pointer-events:none;
+  font-family:-apple-system,"Google Sans",Roboto,sans-serif;
+}
+.pixel-noti{
+  width:100%; max-width:420px; margin-bottom:8px;
+  background:#f1f3f4; color:#202124;
+  border-radius:28px;
+  padding:14px 18px;
+  display:flex; align-items:center; gap:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,.16);
+  transform:translateY(-140%);
+  opacity:0;
+  transition:transform .42s cubic-bezier(.2,.9,.25,1), opacity .42s;
+  pointer-events:auto;
+}
+.pixel-noti.show{ transform:translateY(0); opacity:1; }
+.pixel-noti .ic{
+  width:34px; height:34px; border-radius:50%; flex:0 0 34px;
+  background:#1a73e8; color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; font-weight:600;
+}
+.pixel-noti .ic.gray{ background:#5f6368; }
+.pixel-noti .tx{ min-width:0; flex:1; }
+.pixel-noti .t1{ font-size:14px; font-weight:600; line-height:1.25;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pixel-noti .t2{ font-size:13px; color:#5f6368; line-height:1.3; margin-top:1px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+@media (prefers-color-scheme:dark){
+  .pixel-noti{ background:#2d2e30; color:#e8eaed; }
+  .pixel-noti .t2{ color:#9aa0a6; }
+}
+  /* ==========================================================
+     Uma-Chat · 双主题  Pixel(Material3) / Terminal(Termux)
+     ========================================================== */
+  :root{
+    --ease-out:cubic-bezier(.23,1,.32,1);
+    --ease-in-out:cubic-bezier(.77,0,.175,1);
+    --ease-drawer:cubic-bezier(.32,.72,0,1);
+    --bg:#FDFCFF; --sf:#FFFFFF; --sf1:#F3F0F4; --sf2:#E9E5EC;
+    --on:#1C1B1F; --onv:#49454F; --muted:#79747E;
+    --line:#CAC4D0; --linev:#E7E0EC;
+    --pri-rgb:155,127,208;
+    --pri:rgb(var(--pri-rgb)); --onpri:#FFFFFF; --pric:rgba(var(--pri-rgb),.16);
+    --in-bg:#EFEAF2; --in-fg:#1C1B1F; --my-bg:rgb(var(--pri-rgb)); --my-fg:#2B2140;
+    --err:#B3261E; --ok:#146C2E;
+    --r:18px; --fs:15px;
   }
-
-  body {
-    background: #ffffff;
-    color: #111111;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    font-size: 16px;
-    line-height: 1.7;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  .container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 80px 24px;
-  }
-
-  /* 顶部：头像 + 名字 + 联系方式 */
-  .header {
-    text-align: center;
-  }
-
-  .avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    display: block;
-    margin: 0 auto 24px;
-    border: 1px solid #e5e5e5;
-  }
-
-  .name {
-    font-size: 26px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-  }
-
-  .title {
-    font-size: 15px;
-    color: #666666;
-    margin-top: 6px;
-  }
-
-  .contact {
-    margin-top: 20px;
-    font-size: 15px;
-    color: #444444;
-  }
-
-  .contact a {
-    color: #444444;
-    text-decoration: none;
-    border-bottom: 1px solid #dddddd;
-  }
-
-  .contact a:hover {
-    border-bottom-color: #444444;
-  }
-
-  .contact span {
-    margin: 0 8px;
-    color: #cccccc;
-  }
-
-  /* 分隔线 */
-  hr {
-    border: none;
-    border-top: 1px solid #eeeeee;
-    margin: 48px 0;
-  }
-
-  /* 底部：GitHub */
-  .links {
-    text-align: center;
-  }
-
-  .links-title {
-    font-size: 13px;
-    letter-spacing: 2px;
-    color: #999999;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-
-  .links a {
-    display: inline-block;
-    color: #111111;
-    text-decoration: none;
-    font-size: 16px;
-    border-bottom: 1px solid #111111;
-    padding-bottom: 2px;
-  }
-
-  .links a:hover {
-    color: #666666;
-    border-bottom-color: #666666;
-  }
-
-  /* 三个 GitHub 链接的列表 */
-  .github-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .github-list li {
-    margin-bottom: 14px;
-  }
-
-  .github-list li:last-child {
-    margin-bottom: 0;
-  }
-
-  /* 手机端微调 */
-  @media (max-width: 480px) {
-    .container {
-      padding: 48px 20px;
-    }
-    .avatar {
-      width: 96px;
-      height: 96px;
-    }
-    .name {
-      font-size: 22px;
+  @media (prefers-color-scheme:dark){
+    html:not([data-theme="light"]):not([data-scheme="light"]):not([data-scheme="dark"]){
+      --bg:#141218; --sf:#1C1B20; --sf1:#242229; --sf2:#2E2B33;
+      --on:#E6E1E6; --onv:#CAC4D0; --muted:#938F99;
+      --line:#49454F; --linev:#36343B;
+      --pri-rgb:183,154,232;
+      --pri:rgb(var(--pri-rgb)); --onpri:#1C1B1F; --pric:rgba(var(--pri-rgb),.24);
+      --in-bg:#2E2B33; --in-fg:#E6E1E6; --my-bg:rgb(var(--pri-rgb)); --my-fg:#FFFFFF;
+      --err:#F2B8B5; --ok:#7ADFA0;
     }
   }
-</style>
-</head>
-<body>
+  html[data-theme="dark"], html[data-scheme="dark"]{ color-scheme:dark;
+    --bg:#141218; --sf:#1C1B20; --sf1:#242229; --sf2:#2E2B33;
+    --on:#E6E1E6; --onv:#CAC4D0; --muted:#938F99;
+    --line:#49454F; --linev:#36343B;
+    --pri-rgb:183,154,232;
+    --pri:rgb(var(--pri-rgb)); --onpri:#1C1B1F; --pric:rgba(var(--pri-rgb),.24);
+    --in-bg:#2E2B33; --in-fg:#E6E1E6; --my-bg:rgb(var(--pri-rgb)); --my-fg:#FFFFFF;
+    --err:#F2B8B5; --ok:#7ADFA0;
+  }
+  html[data-theme="light"], html[data-scheme="light"]{ color-scheme:light; }
 
-  <div class="container">
+  /* ---------- 主题色 Accent：暖紫(默认) / 绿 / 蓝（深浅各一） ---------- */
+  html[data-accent="green"]{ --pri-rgb:127,208,161; }
+  html[data-accent="blue"]{ --pri-rgb:127,165,208; }
+  html[data-accent="green"][data-scheme="dark"]{ --pri-rgb:154,232,189; }
+  html[data-accent="blue"][data-scheme="dark"]{ --pri-rgb:154,188,232; }
+  @media (prefers-color-scheme:dark){
+    html[data-accent="green"]:not([data-theme="light"]):not([data-scheme="light"]):not([data-scheme="dark"]){ --pri-rgb:154,232,189; }
+    html[data-accent="blue"]:not([data-theme="light"]):not([data-scheme="light"]):not([data-scheme="dark"]){ --pri-rgb:154,188,232; }
+  }
 
-    <!-- ============ 上半部分：头像 / 名字 / 联系方式 ============ -->
-    <header class="header">
+  /* ---------- 终端（Termux 风） ---------- */
+  body[data-mode="terminal"]{
+    --bg:#000; --sf:#000; --sf1:#001500; --sf2:#003300;
+    --on:#00FF00; --onv:#00CC00; --muted:#009900;
+    --line:#00FF00; --linev:#006600;
+    --pri:#00FF00; --onpri:#000000; --pric:#003300;
+    --in-bg:#000; --in-fg:#00FF00; --my-bg:#000; --my-fg:#00FFFF;
+    --err:#FF5555; --ok:#00FF00;
+    --r:0px; --fs:14px;
+  }
+  body[data-mode="terminal"],
+  body[data-mode="terminal"] input,
+  body[data-mode="terminal"] textarea,
+  body[data-mode="terminal"] button{
+    font-family:'Courier New',Consolas,Menlo,monospace !important;
+  }
+  body[data-mode="terminal"] *{ border-radius:0 !important; box-shadow:none !important; }
 
-      <!-- 头像：把 src 换成你自己的图片地址，或直接放同目录下的 avatar.jpg -->
-      <img class="avatar" src="av.jpg" alt="我的头像">
+  *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; }
+  body{
+    position:relative;
+    background:var(--bg); color:var(--on);
+    font-family:'Google Sans','Roboto',system-ui,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+    font-size:var(--fs); line-height:1.5; overflow:hidden;
+    overscroll-behavior:none; transition:background .25s, color .25s;
+  }
+  body[data-font="s"]{ --fs:13px; }
+  body[data-font="m"]{ --fs:15px; }
+  body[data-font="l"]{ --fs:17px; }
+  .hidden{ display:none !important; }
+  input,textarea,button{ font-family:inherit; font-size:inherit; color:inherit; outline:none; border:none; background:none; }
 
-      <h1 class="name">春暖花开</h1>
+  /* ---------- 登录页 ---------- */
+  #login-view{ height:100%; display:flex; align-items:center; justify-content:center; padding:24px; }
+  .login-box{ width:100%; max-width:360px; }
+  #brand{ font-size:30px; font-weight:700; letter-spacing:-.5px; color:var(--pri); margin-bottom:4px; }
+  body[data-mode="terminal"] #brand{ color:#0F0; font-size:24px; }
+  body[data-mode="terminal"] #brand::before{ content:'$ '; color:#0F0; }
+  .sub{ color:var(--muted); font-size:13px; margin-bottom:26px; }
+  .login-box label{ display:block; font-size:12px; color:var(--onv); margin:14px 0 6px; }
+  .login-box input{
+    width:100%; padding:13px 14px; background:var(--sf1);
+    border:1px solid var(--linev); border-radius:12px; color:var(--on);
+  }
+  body[data-mode="terminal"] .login-box input{ border:1px solid #0F0; background:#000; color:#0F0; }
+  .login-box input:focus{ border-color:var(--pri); }
+  #btn-login{
+    width:100%; margin-top:22px; padding:14px; border-radius:24px;
+    background:var(--pri); color:var(--onpri); font-weight:600; cursor:pointer;
+  }
+  body[data-mode="terminal"] #btn-login{ background:#0F0; color:#000; }
+  .tip{ margin-top:16px; font-size:12px; color:var(--muted); text-align:center; }
 
-      <p class="title">我是春暖花开，别的......没了</p>
+  /* ---------- 视图容器（绝对定位，便于切换过渡） ---------- */
+  #login-view,#chat-view,#users-view,#ai-view,#settings-view{
+    position:absolute; inset:0; backface-visibility:hidden;
+  }
+  /* ---------- 聊天页 ---------- */
+  #chat-view{ height:100%; display:flex; flex-direction:column; }
+  #topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 8px 14px 18px; background:var(--sf);
+    border-bottom:1px solid var(--linev); flex:0 0 auto;
+  }
+  body[data-mode="terminal"] #topbar{ background:#000; border-bottom:1px solid #0F0; }
+  #room-title{ font-size:18px; font-weight:600; }
+  body[data-mode="terminal"] #room-title{ color:#0F0; font-size:15px; }
+  body[data-mode="terminal"] #room-title::before{ content:'> '; }
+  #menu-btn{
+    width:42px; height:42px; border-radius:50%; cursor:pointer;
+    font-size:22px; color:var(--onv); display:flex; align-items:center; justify-content:center;
+  }
+  #menu-btn:active{ background:var(--sf2); }
+  body[data-mode="terminal"] #menu-btn{ color:#0F0; font-size:18px; }
+  body[data-mode="terminal"] #menu-btn:active{ background:#003300; }
 
-      <p class="contact">
-        <!-- 邮箱 -->
-        <a href="mailto:2317245083@qq.com">2317245083@qq.com</a>
-        <span>·</span>
-        <span>QQ号也是这个，swfb_otmopera微信不常看</span>
-      </p>
+  /* 连接状态指示：绿=已连接，黄闪=连接中/重连中，红=未连接 */
+  .conn-chip{
+    display:flex; align-items:center; gap:5px; margin-left:auto; margin-right:10px;
+    font-size:11px; color:var(--muted); white-space:nowrap; user-select:none;
+  }
+  .conn-chip::before{ content:''; width:8px; height:8px; border-radius:50%; background:#e8a33d; }
+  .conn-chip.ok::before{ background:var(--ok); }
+  .conn-chip.warn::before{ background:#e8a33d; animation:connBlink 1s infinite; }
+  .conn-chip.err::before{ background:#e05252; }
+  @keyframes connBlink{ 0%,100%{opacity:1;} 50%{opacity:.25;} }
+  body[data-mode="terminal"] .conn-chip{ color:#0F0; font-size:10px; }
+  body[data-mode="terminal"] .conn-chip::before{ border-radius:0; background:#FF0; }
+  body[data-mode="terminal"] .conn-chip.ok::before{ background:#0F0; }
+  body[data-mode="terminal"] .conn-chip.warn::before{ background:#FF0; }
+  body[data-mode="terminal"] .conn-chip.err::before{ background:#F00; }
 
-    </header>
+  #messages{ flex:1 1 auto; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; }
+  body[data-mode="terminal"] #messages{ padding:10px; gap:0; line-height:1.45; }
+  .msg{ max-width:82%; display:flex; flex-direction:column; }
+  .msg .meta{ font-size:11px; color:var(--muted); margin-bottom:3px; padding:0 6px; }
+  .msg .body{
+    padding:9px 13px; border-radius:var(--r);
+    word-break:break-word; white-space:pre-wrap; font-size:var(--fs);
+  }
+  .msg.other{ align-self:flex-start; }
+  .msg.other .body{ background:var(--my-bg); color:var(--my-fg); border-bottom-left-radius:6px; }
+  .msg.me{ align-self:flex-end; }
+  .msg.me .meta{ text-align:right; }
+  .msg.me .body{ background:var(--my-bg); color:var(--my-fg); border-bottom-right-radius:6px; }
+  .msg.sys{ align-self:center; max-width:100%; }
+  .msg.sys .meta{ display:none; }
+  .msg.sys .body{ background:var(--sf2); color:var(--muted); font-size:12px; text-align:center; padding:5px 12px; }
 
-    <hr>
+  /* 终端模式：纯文字 + 提示符 */
+  body[data-mode="terminal"] .msg{ max-width:100%; display:block; }
+  body[data-mode="terminal"] .msg .meta{ display:none; }
+  body[data-mode="terminal"] .msg .body{
+    display:inline; background:transparent !important; padding:0;
+    color:#0F0; white-space:pre-wrap; word-break:break-word;
+  }
+  body[data-mode="terminal"] .msg.other::before{ content:'\25B8 '; color:#0F0; font-weight:700; }
+  body[data-mode="terminal"] .msg.me::before{ content:'$ '; color:#00FFFF; font-weight:700; }
+  body[data-mode="terminal"] .msg.me .body{ color:#00FFFF; }
+  body[data-mode="terminal"] .msg.sys::before{ content:'[*] '; color:#009900; }
+  body[data-mode="terminal"] .msg.sys .body{ color:#009900; }
 
-    <!-- ============ 下半部分：GitHub 链接（三个） ============ -->
-    <section class="links">
-      <p class="links-title">GitHub</p>
+  /* ---------- 输入栏 ---------- */
+  #composer{
+    display:flex; align-items:flex-end; gap:8px; padding:10px 12px;
+    background:var(--sf); border-top:1px solid var(--linev); flex:0 0 auto;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));
+  }
+  body[data-mode="terminal"] #composer{ background:#000; border-top:1px solid #0F0; }
+  #input{
+    flex:1 1 auto; resize:none; max-height:120px; padding:11px 14px;
+    background:var(--sf1); border:1px solid var(--linev);
+    border-radius:22px; line-height:1.4; color:var(--on);
+  }
+  body[data-mode="terminal"] #input{ background:#000; border:1px solid #0F0; color:#0F0; }
+  #send-btn{
+    flex:0 0 auto; padding:0 20px; height:44px; border-radius:22px;
+    background:var(--pri); color:var(--onpri); font-weight:600; cursor:pointer;
+  }
+  body[data-mode="terminal"] #send-btn{ background:#0F0; color:#000; font-weight:700; }
 
-      <ul class="github-list">
-        <li>
-          <a href="https://github.com/yinfang949-bit/Uma-Chat/" target="_blank" rel="noopener">
-            关于Uma-Chat 一个聊天工具
-          </a>
-        </li>
-        <li>
-          <a href="https://github.com/yinfang949-bit/SWFB-biliclient" target="_blank" rel="noopener">
-            关于swfb-biliclient 一个极简的b站第三方客户端 优化了服务器连接
-          </a>
-        </li>
-        <li>
-          <a href="https://github.com/yinfang949-bit/swfb-music" target="_blank" rel="noopener">
-            关于swfb-music 一个轻量化的本地音乐播放器
-          </a>
-        </li>
-      </li>
-         <a href="http://hk1.afrp.net:10022" target="_blank" rel="noopener">
-            点击此处浏览Uma chat网页版
-          </a>
-        </li>
-      </ul>
-    </section>
+  /* ---------- 底部导航栏（发送栏位置） ---------- */
+  #nav-bar{
+    position:absolute; left:0; right:0; bottom:0; z-index:60;
+    display:flex; background:var(--sf); border-top:1px solid var(--linev);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    min-height:calc(68px + env(safe-area-inset-bottom,0px));
+    box-shadow:0 -8px 26px rgba(20,18,24,.14);
+    transform:translateY(112%);
+    transition:transform .3s var(--ease-drawer);
+    will-change:transform;
+  }
+  #nav-bar.open{ transform:translateY(0); }
+  body.nav-open #user-list{ padding-bottom:74px; }
+  body[data-mode="terminal"] #nav-bar{ background:#000; border-top:1px solid #0F0; }
+  .nav-item{
+    flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+    padding:11px 0; cursor:pointer; color:var(--muted);
+  }
+  .nav-item .ic{ font-size:19px; line-height:1; }
+  .nav-item em{ font-style:normal; font-size:11px; }
+  .nav-item.on{ color:var(--pri); }
+  body[data-mode="terminal"] .nav-item{ color:#009900; }
+  body[data-mode="terminal"] .nav-item.on{ color:#000; background:#0F0; }
 
-  </div>
+  /* ---------- 用户列表 ---------- */
+  #users-view, #ai-view, #settings-view{ height:100%; display:flex; flex-direction:column; }
+  #users-top, #set-top{
+    display:flex; align-items:center; gap:8px; padding:14px 14px;
+    border-bottom:1px solid var(--linev); background:var(--sf); flex:0 0 auto;
+    font-size:18px; font-weight:600;
+  }
+  body[data-mode="terminal"] #users-top, body[data-mode="terminal"] #set-top{ background:#000; border-bottom:1px solid #0F0; color:#0F0; font-size:15px; }
+  #users-back, #set-back{
+    width:40px; height:40px; border-radius:50%; font-size:19px;
+    cursor:pointer; color:var(--onv); display:flex; align-items:center; justify-content:center;
+  }
+  body[data-mode="terminal"] #users-back, body[data-mode="terminal"] #set-back{ color:#0F0; }
+  #user-list{ flex:1 1 auto; overflow-y:auto; }
+  .user-row{
+    display:flex; align-items:center; gap:12px; padding:14px 18px;
+    cursor:pointer; border-bottom:1px solid var(--linev);
+  }
+  body[data-mode="terminal"] .user-row{ border-bottom:1px solid #003300; }
+  .user-row:active{ background:var(--sf1); }
+  .user-row .dot{ width:9px; height:9px; border-radius:50%; background:var(--ok); flex:0 0 auto; }
+  .user-row .dot.offline{ background:var(--muted); opacity:.5; }
+  .user-row .dot.self{ background:var(--pri); }
+  .user-row .st{ font-size:11px; color:var(--muted); margin-left:auto; }
+  body[data-mode="terminal"] .user-row .dot{ border-radius:0; }
+  .user-row .nm{ font-size:var(--fs); }
+  body[data-mode="terminal"] .user-row .nm{ color:#0F0; }
+  body[data-mode="terminal"] .user-row .nm::before{ content:'@'; color:#009900; }
+  .user-empty{ padding:40px 18px; text-align:center; color:var(--muted); font-size:13px; }
 
-</body>
-</html>
+  /* ---------- 设置页 ---------- */
+  .set-body{ flex:1 1 auto; overflow-y:auto; padding:8px 0 30px; }
+  .set-group{ padding:14px 18px; border-bottom:1px solid var(--linev); }
+  body[data-mode="terminal"] .set-group{ border-bottom:1px dashed #006600; }
+  .set-label{ font-size:12px; color:var(--muted); margin-bottom:10px; letter-spacing:.3px; }
+  body[data-mode="terminal"] .set-label{ color:#009900; }
+  body[data-mode="terminal"] .set-label::before{ content:'# '; }
+  .seg{ display:flex; gap:0; border:1px solid var(--line); border-radius:20px; overflow:hidden; }
+  body[data-mode="terminal"] .seg{ border:1px solid #0F0; }
+  .seg button{ flex:1 1 0; padding:9px 0; cursor:pointer; color:var(--onv); font-size:13px; }
+  body[data-mode="terminal"] .seg button{ color:#0F0; }
+  .seg button.on{ background:var(--pric); color:var(--pri); font-weight:600; }
+  body[data-mode="terminal"] .seg button.on{ background:#0F0; color:#000; }
+  /* ---------- iOS6 风开关（真开关） ---------- */
+  .sw-row{ display:flex; align-items:center; justify-content:space-between; padding:9px 0; font-size:14px; }
+  .sw-row + .sw-row{ border-top:1px solid var(--linev); }
+  body[data-mode="terminal"] .sw-row + .sw-row{ border-top:1px dashed #006600; }
+  .sw-row .sw-name{ color:var(--onv); }
+  body[data-mode="terminal"] .sw-row .sw-name{ color:#009900; }
+  .sw{
+    position:relative; width:48px; height:28px; border-radius:14px; flex:0 0 auto;
+    background:#d9d9de; border:1px solid rgba(0,0,0,.10); cursor:pointer;
+    transition:background .22s cubic-bezier(.22,.61,.36,1);
+  }
+  .sw::after{
+    content:''; position:absolute; top:2px; left:2px; width:22px; height:22px; border-radius:50%;
+    background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.28);
+    transition:transform .22s cubic-bezier(.22,.61,.36,1);
+  }
+  .sw.on{ background:#3a9d5d; border-color:rgba(0,0,0,.06); }
+  .sw.on::after{ transform:translateX(20px); }
+  body[data-mode="terminal"] .sw{ border-radius:4px; background:#111; border:1px solid #0F0; }
+  body[data-mode="terminal"] .sw::after{ border-radius:2px; background:#0F0; box-shadow:none; }
+  body[data-mode="terminal"] .sw.on{ background:#0F0; }
+  body[data-mode="terminal"] .sw.on::after{ background:#000; }
+
+  .set-row{ display:flex; justify-content:space-between; padding:7px 0; font-size:14px; }
+  .set-row span{ color:var(--onv); }
+  body[data-mode="terminal"] .set-row span{ color:#009900; }
+  body[data-mode="terminal"] .set-row b{ color:#0F0; font-weight:400; }
+  .set-btn{
+    display:block; width:100%; text-align:left; padding:13px 0; cursor:pointer;
+    font-size:14px; border-bottom:1px solid var(--linev);
+  }
+  body[data-mode="terminal"] .set-btn{ border-bottom:1px dashed #006600; }
+  .set-btn:last-child{ border-bottom:none; }
+  body[data-mode="terminal"] .set-btn{ color:#0F0; }
+  body[data-mode="terminal"] .set-btn::before{ content:'- '; }
+  .set-btn.danger{ color:var(--err); }
+  body[data-mode="terminal"] .set-btn.danger{ color:#FF5555; }
+  .about-box{ margin-bottom:12px; }
+  .a-sub{ color:#9d94ad; font-size:12px; margin:12px 0 4px; letter-spacing:1px; }
+  .a-note{ color:#cbb9e6; font-size:13px; line-height:1.7; border-left:2px solid #6d5a91; padding-left:10px; margin:8px 0; }
+  .a-by{ text-align:right; color:#9d94ad; font-size:12px; font-style:italic; margin:2px 0 8px; }
+
+  .about-title{ font-size:17px; font-weight:700; color:var(--pri); margin-bottom:6px; }
+  body[data-mode="terminal"] .about-title{ color:#0F0; }
+  .about-line{ font-size:13px; color:var(--onv); line-height:1.8; }
+  body[data-mode="terminal"] .about-line{ color:#009900; }
+  body[data-mode="terminal"] .about-line::before{ content:'  '; }
+  .egg-hint{ text-align:center; color:#8a7f9c; font-size:12px; letter-spacing:2px; padding:22px 0 10px; cursor:pointer; user-select:none; transition:color .3s; } .egg-hint:active{ color:#c9a7ff; }
+
+  /* ---------- 模态框 ---------- */
+  #modal{
+    position:fixed; inset:0; z-index:80; display:flex;
+    align-items:center; justify-content:center; padding:22px;
+    background:rgba(0,0,0,.5); backdrop-filter:blur(2px);
+    opacity:0; transition:opacity .2s var(--ease-out);
+  }
+  #modal.show{ opacity:1; }
+  .modal-card{
+    width:100%; max-width:420px; max-height:82vh; overflow-y:auto;
+    background:var(--sf); border-radius:24px; padding:22px;
+    box-shadow:0 18px 50px rgba(0,0,0,.32);
+    transform:scale(.94); opacity:0;
+    transition:transform .26s cubic-bezier(.22,1.25,.36,1), opacity .18s var(--ease-out);
+    will-change:transform,opacity;
+  }
+  #modal.show .modal-card{ transform:scale(1); opacity:1; }
+  #modal:not(.show) .modal-card{ transition:transform .18s var(--ease-out), opacity .16s ease-out; }
+  body[data-mode="terminal"] .modal-card{ background:#000; border:1px solid #0F0; padding:16px; }
+  .modal-title{ font-size:19px; font-weight:700; margin-bottom:14px; }
+  body[data-mode="terminal"] .modal-title{ color:#0F0; font-size:15px; }
+  body[data-mode="terminal"] .modal-title::before{ content:'> '; }
+  .modal-body{ font-size:14px; color:var(--onv); line-height:1.75; }
+  body[data-mode="terminal"] .modal-body{ color:#0F0; font-size:13px; }
+  .modal-body p{ margin-bottom:11px; }
+  .modal-body .a-sub{ color:var(--pri); font-weight:600; }
+  body[data-mode="terminal"] .modal-body .a-sub{ color:#00FFFF; }
+  .modal-body .a-sign{ text-align:right; color:var(--muted); font-style:italic; }
+  .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:18px; }
+  #modal-close, .m-btn{
+    padding:9px 18px; border-radius:20px; cursor:pointer; font-size:13px;
+    background:var(--pric)
