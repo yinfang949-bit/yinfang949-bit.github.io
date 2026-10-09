@@ -380,4 +380,2730 @@
   .modal-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:18px; }
   #modal-close, .m-btn{
     padding:9px 18px; border-radius:20px; cursor:pointer; font-size:13px;
-    background:var(--pric)
+    background:var(--pric); color:var(--pri); font-weight:600;
+  }
+  .m-btn{ padding:9px 14px; }
+  body[data-mode="terminal"] #modal-close, body[data-mode="terminal"] .m-btn{ background:#0F0; color:#000; }
+
+  /* ---------- 彩蛋全屏白幕 ---------- */
+  #egg-screen{
+    position:fixed; inset:0; z-index:9999; background:#FFFFFF;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; cursor:pointer; -webkit-tap-highlight-color:transparent;
+  }
+  #egg-screen.hidden{ display:none; }
+  #egg-text{
+    color:#3a2e52; font-size:22px; font-weight:600; letter-spacing:3px;
+    text-align:center; opacity:1; max-width:80%; line-height:1.8;
+  }
+
+  /* ================= 彩蛋图标（设置页右下角） ================= */
+  #egg-fab{
+    position:absolute; right:16px; bottom:88px; z-index:200;
+    width:44px; height:44px; border-radius:50%;
+    background:#eef1f6; border:1px solid #cfd6e2;
+    box-shadow:0 2px 8px rgba(60,80,120,.14);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px; color:#8a93a6; cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .18s cubic-bezier(.22,.61,.36,1), box-shadow .18s ease-out;
+  }
+  #egg-fab:active{ transform:scale(.9); box-shadow:0 1px 4px rgba(60,80,120,.2); }
+  #egg-fab.hidden{ display:none; }
+  body[data-mode="terminal"] #egg-fab{ background:#0a0a0a; border-color:#0F0; color:#0F0; box-shadow:none; }
+
+/* ================= 右下角固定菜单（非悬浮浮层） ================= */
+  /* 固定在彩蛋（#egg-fab, bottom:88px + 44px）正上方，右下角常驻，不可拖动/缩放 */
+  #console{
+    position:fixed; left:16px; top:120px; z-index:3000;
+    width:236px; height:auto;
+    display:flex; flex-direction:column;
+    background:#e9eef6; border:1px solid #c4cddc; border-radius:14px;
+    box-shadow:0 10px 30px rgba(50,70,110,.28);
+    overflow:hidden;
+    font-size:13px;
+    -webkit-tap-highlight-color:transparent;
+    opacity:0; pointer-events:none;
+    transition:opacity .18s ease-out;
+    touch-action:none;
+  }
+  #console.show{ opacity:1; pointer-events:auto; }
+  #console.hidden{ display:none; }
+  #console.closing{ opacity:0; transition-timing-function:ease-in; }
+  #console.dragging{ box-shadow:0 16px 40px rgba(50,70,110,.4); }
+  /* 顶部扁灰条 */
+  #console-bar{
+    flex:0 0 auto; height:36px; background:#d7dde8;
+    border-bottom:1px solid #c4cddc;
+    display:flex; align-items:center; gap:8px; padding:0 10px;
+    cursor:move; user-select:none; touch-action:none;
+    background-image:radial-gradient(circle, #aab4c6 1px, transparent 1px);
+    background-size:9px 9px; background-position:center 3px;
+  }
+  #console-bar .c-title{ flex:1 1 auto; text-align:center; color:#5b6478; font-size:13px; letter-spacing:1px; }
+  #console-fold{
+    flex:0 0 auto; width:24px; height:22px; border:1px solid #b7c0d0; border-radius:6px;
+    background:#eef1f6; color:#6b7488; font-size:12px; line-height:1;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition:background .15s ease-out, color .15s ease-out, border-color .15s ease-out;
+  }
+  #console-fold:active{ background:#e6b3b3; color:#a33; border-color:#c98a8a; }
+
+  /* 主体：左分类 / 右详情 */
+  #console-body{ flex:1 1 auto; display:flex; min-height:0; }
+  #console-cats{
+    flex:0 0 66px; background:#e2e7f0; border-right:1px solid #cfd6e2;
+    display:flex; flex-direction:column; padding:6px 0;
+  }
+  .c-cat{
+    padding:11px 6px; text-align:center; color:#5b6478; font-size:12.5px;
+    cursor:pointer; transition:background .15s ease-out, color .15s ease-out;
+    border-left:3px solid transparent;
+  }
+  .c-cat.on{ background:#f4f7fc; color:#2a3a5c; border-left-color:#5b8def; }
+  .c-cat:active{ background:#d8deea; }
+
+  #console-pane{ flex:1 1 auto; background:#f4f7fc; padding:12px; overflow-y:auto; min-width:0; }
+  .c-pane-title{ font-size:12px; color:#8a93a6; margin-bottom:10px; letter-spacing:.5px; }
+  .c-btn{
+    display:block; width:100%; box-sizing:border-box;
+    margin-bottom:9px; padding:11px 12px;
+    background:#ffffff; border:1px solid #d3dae6; border-radius:9px;
+    color:#3a4460; font-size:13px; text-align:left; cursor:pointer;
+    transition:background .16s ease-out, transform .12s ease-out, border-color .16s ease-out;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .c-btn:active{ transform:scale(.97); background:#eef2f9; border-color:#b7c3d8; }
+  .c-btn.tapped{ background:#e3ecff; border-color:#7ea8f0; }
+
+  /* 底部动画演示区（常驻可见，点动画按钮时在这里播放） */
+  #console-demo{
+    flex:0 0 auto; height:64px; position:relative;
+    border-top:1px solid #cfd6e2; background:#fbfcfe;
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+  #console-demo .demo-empty{ color:#aab4c6; font-size:12px; letter-spacing:1px; }
+  #console-demo .demo-box{
+    padding:8px 18px; border-radius:10px; background:#e3ecff;
+    border:1px solid #7ea8f0; color:#2a3a5c; font-size:15px; font-weight:600;
+    letter-spacing:3px; will-change:transform,opacity;
+    animation-fill-mode:both;
+  }
+  /* 关键帧（不依赖外部是否命中 reduce-motion） */
+  @keyframes cPop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12);opacity:1}100%{transform:scale(1);opacity:1}}
+  @keyframes cSlide{0%{transform:translateX(-90px);opacity:0}100%{transform:translateX(0);opacity:1}}
+  @keyframes cFade{0%{opacity:0}100%{opacity:1}}
+  @keyframes cBlink{0%,100%{opacity:1}50%{opacity:.05}}
+  /* 缩放手柄彻底隐藏（需求：缩小键无用） */
+  #console-resize{ display:none !important; }
+
+  body[data-mode="terminal"] #console{ background:#0a0a0a; border-color:#0F0; box-shadow:0 0 0 1px #0F0; }
+  body[data-mode="terminal"] #console-bar{ background:#111; border-bottom-color:#0F0; }
+  body[data-mode="terminal"] #console-bar .c-title{ color:#0F0; }
+  body[data-mode="terminal"] #console-fold{ background:#0a0a0a; border-color:#0F0; color:#0F0; }
+  body[data-mode="terminal"] #console-cats{ background:#050505; border-right-color:#0F0; }
+  body[data-mode="terminal"] .c-cat{ color:#0F0; }
+  body[data-mode="terminal"] .c-cat.on{ background:#0d0d0d; color:#0F0; border-left-color:#0F0; }
+  body[data-mode="terminal"] #console-pane{ background:#000; }
+  body[data-mode="terminal"] .c-pane-title{ color:#0F0; }
+  body[data-mode="terminal"] .c-btn{ background:#000; border-color:#0F0; color:#0F0; }
+  /* ---------- Toast（消息通知） ---------- */
+  #toast{
+    position:fixed; left:50%; bottom:74px; transform:translate(-50%,20px);
+    z-index:120; max-width:82%; padding:12px 20px; border-radius:24px;
+    background:var(--on); color:var(--bg); font-size:13.5px;
+    box-shadow:0 6px 22px rgba(0,0,0,.3); white-space:pre-wrap; text-align:center;
+    opacity:0; transition:opacity .25s, transform .25s; pointer-events:none;
+  }
+  #toast.show{ opacity:1; transform:translate(-50%,0); }
+  body[data-mode="terminal"] #toast{ background:#000; color:#0F0; border:1px solid #0F0; font-family:'Courier New',monospace; }
+
+  #scan{ position:fixed; inset:0; z-index:-1; }
+  /* 移除全局 reduce-motion 强制压缩，避免动画演示失效 */
+  @keyframes popIn{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+  @keyframes slideIn{0%{transform:translateX(-40px);opacity:0}100%{transform:translateX(0);opacity:1}}
+  @keyframes fadeIn{0%{opacity:0}100%{opacity:1}}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+  /* ================= 主题 / 字号 平滑切换 ================= */
+  body.fonting *{ transition:font-size .26s var(--ease-out) !important; }
+  body.theming *{ transition:background-color .3s ease, color .3s ease, border-color .3s ease, box-shadow .3s ease, font-size .3s ease !important; }
+
+  /* ================= 输入区（键盘弹出平滑上移） ================= */
+  #composer{ will-change:transform; }
+  #composer.kb-anim{ transition:transform .26s var(--ease-out); }
+
+  /* ================= 错误日志闪屏（红色细边框，仅边框闪烁） ================= */
+  #errlog{
+    position:fixed; inset:0; z-index:99990;
+    display:flex; align-items:center; justify-content:center; padding:22px;
+    background:rgba(20,18,24,.55);
+  }
+  #errlog.hidden{ display:none; }
+  #errlog .err-card{
+    width:100%; max-width:440px; max-height:74vh;
+    display:flex; flex-direction:column; overflow:hidden;
+    background:var(--sf); border-radius:20px;
+    border:2px solid var(--err);
+    box-shadow:0 18px 50px rgba(0,0,0,.35);
+    animation:errPulse 1.1s ease-in-out infinite;
+  }
+  @keyframes errPulse{
+    0%,100%{ border-color:rgba(179,38,30,.28); box-shadow:0 18px 50px rgba(0,0,0,.35), 0 0 0 0 rgba(179,38,30,0); }
+    50%    { border-color:rgba(179,38,30,1);   box-shadow:0 18px 50px rgba(0,0,0,.35), 0 0 18px 0 rgba(179,38,30,.45); }
+  }
+  #errlog .err-head{
+    flex:0 0 auto; padding:14px 18px; font-size:14px; font-weight:700;
+    color:var(--err); letter-spacing:.5px; border-bottom:1px solid var(--linev);
+  }
+  #errlog .err-body{
+    flex:1 1 auto; overflow:auto; padding:14px 18px;
+    font-family:'Roboto Mono','Courier New',monospace; font-size:12px; line-height:1.6;
+    color:var(--onv); white-space:pre-wrap; word-break:break-word;
+    user-select:text; -webkit-user-select:text;
+  }
+  #errlog .err-acts{ display:flex; gap:10px; margin:0 18px 18px; }
+  #errlog .err-copy, #errlog .err-close{
+    flex:1 1 auto; padding:12px; border-radius:22px; text-align:center;
+    background:var(--pri); color:var(--onpri); font-weight:600; font-size:14px; cursor:pointer;
+    transition:transform .14s var(--ease-out), background .18s ease, opacity .18s ease;
+  }
+  #errlog .err-close{ flex:0 0 auto; padding:12px 18px; background:var(--sf2); color:var(--onv); }
+  #errlog .err-copy:active, #errlog .err-close:active{ transform:scale(.97); }
+  /* 严格模式（出错时）：隐藏关闭按钮，必须复制日志才能关闭 */
+  #errlog.strict .err-close{ display:none; }
+  body[data-mode="terminal"] #errlog .err-card{ background:#000; border-color:#FF5555; }
+  body[data-mode="terminal"] #errlog .err-head{ color:#FF5555; border-bottom-color:#0F0; }
+  body[data-mode="terminal"] #errlog .err-body{ color:#0F0; }
+
+  /* ================= 私密聊天（端到端加密） ================= */
+  #dm-pass{
+    width:100%; margin:10px 0 0; padding:13px 14px; background:var(--sf1);
+    border:1px solid var(--linev); border-radius:12px; color:var(--on);
+  }
+  #dm-pass:focus{ border-color:var(--pri); }
+  #modal #dm-go{ background:var(--pri); color:var(--onpri); font-weight:600; }
+  #modal #dm-go:disabled{ opacity:.6; }
+  .dm-tip{ font-size:13px; color:var(--onv); line-height:1.75; }
+  .dm-err{ min-height:18px; margin-top:8px; font-size:12px; color:var(--err); }
+  .dm-note{ margin-top:10px; font-size:12px; color:var(--muted); line-height:1.75; }
+  .msg .body.dm-locked{ color:var(--muted); font-style:italic; cursor:pointer; }
+  body[data-mode="terminal"] #dm-pass{ background:#000; border:1px solid #0F0; color:#0F0; }
+  body[data-mode="terminal"] #modal #dm-go{ background:#0F0; color:#000; }
+  /* ---------- AI 助手 ---------- */
+  #ai-top{
+    display:flex; align-items:center; gap:8px; padding:14px 14px;
+    border-bottom:1px solid var(--linev); background:var(--sf); flex:0 0 auto;
+  }
+  #ai-top .ai-title{ font-size:18px; font-weight:600; }
+  body[data-mode="terminal"] #ai-top{ background:#000; border-bottom:1px solid #0F0; }
+  body[data-mode="terminal"] #ai-top .ai-title{ color:#0F0; font-size:15px; }
+  #ai-back, #ai-cfg-btn{
+    width:36px; height:36px; border-radius:50%; cursor:pointer; flex:0 0 auto;
+    font-size:20px; color:var(--onv); display:flex; align-items:center; justify-content:center;
+  }
+  #ai-cfg-btn{ margin-left:auto; }
+  body[data-mode="terminal"] #ai-back, body[data-mode="terminal"] #ai-cfg-btn{ color:#0F0; }
+  #ai-messages{ flex:1 1 auto; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; }
+  body[data-mode="terminal"] #ai-messages{ padding:10px; gap:0; line-height:1.45; }
+  #ai-composer{
+    display:flex; align-items:flex-end; gap:8px; padding:10px 12px;
+    background:var(--sf); border-top:1px solid var(--linev); flex:0 0 auto;
+    padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));
+  }
+  body[data-mode="terminal"] #ai-composer{ background:#000; border-top:1px solid #0F0; }
+  #ai-input{
+    flex:1 1 auto; resize:none; max-height:120px; padding:11px 14px;
+    background:var(--sf1); border:1px solid var(--linev); border-radius:var(--r);
+    color:var(--on); font-size:var(--fs); line-height:1.4;
+  }
+  body[data-mode="terminal"] #ai-input{ background:#000; border:1px solid #0F0; color:#0F0; }
+  #ai-send{
+    flex:0 0 auto; padding:11px 18px; border-radius:999px; cursor:pointer;
+    background:var(--pri); color:var(--onpri); font-weight:600;
+  }
+  body[data-mode="terminal"] #ai-send{ background:#0F0; color:#000; border-radius:0; font-weight:700; }
+  #ai-send[disabled]{ opacity:.5; cursor:default; }
+  .ai-in{
+    width:100%; padding:11px 14px; margin-top:6px; background:var(--sf1);
+    border:1px solid var(--linev); border-radius:12px; color:var(--on); font-size:var(--fs);
+    -webkit-user-select:text; user-select:text;
+  }
+  body[data-mode="terminal"] .ai-in{ background:#000; border:1px solid #0F0; color:#0F0; border-radius:0; }
+  .ai-in:focus{ border-color:var(--pri); }
+  textarea.ai-in{ resize:vertical; min-height:64px; line-height:1.45; }
+  .ai-hint{ font-size:11px; color:var(--muted); margin-top:6px; line-height:1.5; }
+
+  /* ==========================================================
+     液态玻璃 · Liquid Glass — 移植自 文字.txt
+     仅“标准”模式生效；终端模式完全不受影响。
+     动态项：仅底层光晕 background-position 漂移（14s），无高光扫动 / 折射 / 形变。
+     ========================================================== */
+  body[data-mode="standard"]{
+    --glass-blur:18px;
+  --glass-bg:rgba(255,255,255,.22);           /* 顶栏·导航·输入区 */
+  --glass-bg-soft:rgba(255,255,255,.22);      /* 输入框 */
+  --glass-border:rgba(255,255,255,.45);
+  --glass-line:rgba(var(--pri-rgb),.16);
+  --glass-inset:inset 0 1px 2px rgba(255,255,255,.45);
+  --glass-shadow:0 8px 32px rgba(31,27,46,.13);
+  --glass-soft:0 4px 18px rgba(31,27,46,.08);
+  --glass-in:rgba(255,255,255,.22);
+  --glass-my:rgba(var(--pri-rgb),.24);
+    background:
+      radial-gradient(58% 42% at 12% 8%, rgba(var(--pri-rgb),.34), transparent 62%),
+      radial-gradient(52% 40% at 88% 12%, rgba(var(--pri-rgb),.16), transparent 62%),
+      radial-gradient(66% 52% at 80% 92%, rgba(var(--pri-rgb),.22), transparent 66%),
+      linear-gradient(160deg,#F7F4FC 0%,#F1EFFA 52%,#FDFCFF 100%);
+    background-size:240% 240%,240% 240%,240% 240%,100% 100%;
+    background-attachment:fixed;
+    animation:glass-drift 14s ease-in-out infinite alternate;
+    will-change:background-position;
+  }
+  @keyframes glass-drift{
+    0%{ background-position:0% 0%, 100% 0%, 100% 100%, 0 0; }
+    50%{ background-position:60% 50%, 40% 60%, 35% 45%, 0 0; }
+    100%{ background-position:100% 100%, 0% 100%, 0% 0%, 0 0; }
+  }
+  @media (prefers-color-scheme:dark){
+    html:not([data-theme="light"]):not([data-scheme="light"]):not([data-scheme="dark"]) body[data-mode="standard"]{
+      --glass-bg:rgba(24,22,28,.30);
+      --glass-bg-soft:rgba(24,22,28,.30);
+      --glass-border:rgba(255,255,255,.12);
+      --glass-line:rgba(var(--pri-rgb),.20);
+      --glass-inset:inset 0 1px 2px rgba(255,255,255,.05);
+      --glass-shadow:0 8px 32px rgba(0,0,0,.42);
+      --glass-soft:0 4px 18px rgba(0,0,0,.34);
+      --glass-in:rgba(46,43,51,.26);
+      --glass-my:rgba(var(--pri-rgb),.30);
+      background:
+        radial-gradient(58% 42% at 12% 8%, rgba(var(--pri-rgb),.22), transparent 62%),
+        radial-gradient(52% 40% at 88% 12%, rgba(var(--pri-rgb),.12), transparent 62%),
+        radial-gradient(66% 52% at 80% 92%, rgba(var(--pri-rgb),.16), transparent 66%),
+        linear-gradient(135deg,#0b0a0d 0%,#121016 55%,#0a0a0c 100%);
+      background-size:240% 240%,240% 240%,240% 240%,100% 100%;
+      background-attachment:fixed;
+      animation:glass-drift 14s ease-in-out infinite alternate;
+      will-change:background-position;
+    }
+  }
+  html[data-theme="dark"] body[data-mode="standard"],
+  html[data-scheme="dark"] body[data-mode="standard"]{
+    --glass-bg:rgba(24,22,28,.30);
+    --glass-bg-soft:rgba(24,22,28,.30);
+    --glass-border:rgba(255,255,255,.12);
+    --glass-line:rgba(var(--pri-rgb),.20);
+    --glass-inset:inset 0 1px 2px rgba(255,255,255,.05);
+    --glass-shadow:0 8px 32px rgba(0,0,0,.42);
+    --glass-soft:0 4px 18px rgba(0,0,0,.34);
+    --glass-in:rgba(46,43,51,.26);
+    --glass-my:rgba(var(--pri-rgb),.30);
+    background:
+      radial-gradient(58% 42% at 12% 8%, rgba(var(--pri-rgb),.22), transparent 62%),
+      radial-gradient(52% 40% at 88% 12%, rgba(var(--pri-rgb),.12), transparent 62%),
+      radial-gradient(66% 52% at 80% 92%, rgba(var(--pri-rgb),.16), transparent 66%),
+      linear-gradient(135deg,#0b0a0d 0%,#121016 55%,#0a0a0c 100%);
+    background-size:240% 240%,240% 240%,240% 240%,100% 100%;
+    background-attachment:fixed;
+    animation:glass-drift 14s ease-in-out infinite alternate;
+    will-change:background-position;
+  }
+
+  /* 顶栏 / 页面头部：毛玻璃条 */
+  body[data-mode="standard"] #topbar,
+  body[data-mode="standard"] #users-top,
+  body[data-mode="standard"] #set-top,
+  body[data-mode="standard"] #ai-top{
+    background:var(--glass-bg);
+    -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+    backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+    border-bottom:1px solid var(--glass-line);
+    box-shadow:var(--glass-inset), var(--glass-soft);
+  }
+
+  /* 底部输入区 / 悬浮导航栏 */
+  body[data-mode="standard"] #composer,
+  body[data-mode="standard"] #ai-composer{
+    background:var(--glass-bg);
+    -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+    backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+    border-top:1px solid var(--glass-line);
+    box-shadow:var(--glass-inset), 0 -4px 18px rgba(31,27,46,.07);
+  }
+  body[data-mode="standard"] #nav-bar{
+    background:var(--glass-bg);
+    -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+    backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+    border-top:1px solid var(--glass-line);
+    box-shadow:0 -8px 26px rgba(20,18,24,.10), var(--glass-inset);
+  }
+
+  /* 输入控件：玻璃填充（聚焦描边保持原样） */
+  body[data-mode="standard"] #input,
+  body[data-mode="standard"] #ai-input,
+  body[data-mode="standard"] .ai-in,
+  body[data-mode="standard"] #dm-pass,
+  body[data-mode="standard"] .login-box input{
+    background:var(--glass-bg-soft);
+    box-shadow:var(--glass-inset);
+  }
+  body[data-mode="standard"] #input:not(:focus),
+  body[data-mode="standard"] #ai-input:not(:focus),
+  body[data-mode="standard"] .ai-in:not(:focus),
+  body[data-mode="standard"] #dm-pass:not(:focus),
+  body[data-mode="standard"] .login-box input:not(:focus){
+    border-color:var(--glass-border);
+  }
+
+  /* 消息气泡：真·毛玻璃（与顶栏/输入栏同源，补背景模糊） */
+  body[data-mode="standard"] .msg.other .body{
+    background:var(--glass-my);
+    -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+    backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+    border:1px solid rgba(255,255,255,.30);
+    box-shadow:var(--glass-inset), 0 4px 14px rgba(31,27,46,.10);
+  }
+  body[data-mode="standard"] .msg.me .body{
+    background:var(--glass-my);
+    -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+    backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+    border:1px solid rgba(255,255,255,.30);
+    box-shadow:var(--glass-inset), 0 4px 14px rgba(31,27,46,.10);
+  }
+
+  /* 登录卡片 / 模态框 / 设置分组卡片 */
+  body[data-mode="standard"] .login-box{
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    border-radius:24px;
+    padding:28px 22px 24px;
+    box-shadow:var(--glass-shadow), var(--glass-inset);
+    -webkit-backdrop-filter:blur(20px) saturate(160%);
+    backdrop-filter:blur(20px) saturate(160%);
+  }
+  body[data-mode="standard"] #modal{
+    background:rgba(18,12,32,.38);
+    -webkit-backdrop-filter:blur(8px);
+    backdrop-filter:blur(8px);
+  }
+  body[data-mode="standard"] .modal-card{
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    box-shadow:0 18px 50px rgba(0,0,0,.28), var(--glass-inset);
+    -webkit-backdrop-filter:blur(20px) saturate(160%);
+    backdrop-filter:blur(20px) saturate(160%);
+  }
+  body[data-mode="standard"] .set-body{ padding:14px 14px 30px; }
+  body[data-mode="standard"] .set-group{
+    background:var(--glass-bg-soft);
+    border:1px solid var(--glass-border);
+    border-radius:20px;
+    margin-bottom:12px;
+    box-shadow:var(--glass-inset);
+  }
+
+  /* 【8】导航栏打开时：输入栏淡出 + 下滑隐藏（JS 打开导航会给 body 加 .nav-open） */
+  body[data-mode="standard"] #composer,
+  body[data-mode="standard"] #ai-composer{
+    transition:opacity .32s ease, transform .32s ease;
+  }
+  body[data-mode="standard"].nav-open #composer,
+  body[data-mode="standard"].nav-open #ai-composer{
+    opacity:0;
+    transform:translateY(110%);
+    pointer-events:none;
+  }
+  /* 导航栏玻璃加强（打开时压住输入区） */
+  body[data-mode="standard"] #nav-bar{
+    background:var(--glass-bg);
+    border-top:1px solid var(--glass-border);
+    -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+    backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+    box-shadow:var(--glass-soft);
+  }
+  /* ==========================================================
+     【内容穿透 · 毛玻璃】消息在顶栏 / 输入栏 / 导航栏下方滚动，
+     透过毛玻璃显现（仅标准模式；终端模式不受影响）
+     ========================================================== */
+  body[data-mode="standard"] #chat-view,
+  body[data-mode="standard"] #ai-view{ display:block; }
+
+  body[data-mode="standard"] #messages,
+  body[data-mode="standard"] #ai-messages{
+    position:absolute; left:0; right:0; top:0; bottom:0; z-index:1;
+    padding-top:var(--bar-top,56px);
+    padding-bottom:var(--bar-btm,76px);
+    -webkit-overflow-scrolling:touch;
+  }
+  body[data-mode="standard"] #topbar,
+  body[data-mode="standard"] #ai-top{
+    position:absolute; top:0; left:0; right:0; z-index:20;
+  }
+  body[data-mode="standard"] #composer,
+  body[data-mode="standard"] #ai-composer{
+    position:absolute; left:0; right:0; bottom:0; z-index:20;
+  }
+  body[data-mode="standard"].nav-open #messages,
+  body[data-mode="standard"].nav-open #ai-messages{
+    padding-bottom:calc(var(--bar-btm,76px) + 22px);
+  }
+
+  /* ==========================================================
+     Material3 主题（data-theme="m3"）：标准模式下关闭液态玻璃，
+     把毛玻璃变量逐一还原为实色，等同原 index.original.html 的 Pixel
+     —— 只影响 data-glass="off"，液态玻璃主题不受影响
+     ========================================================== */
+  body[data-mode="standard"][data-glass="off"]{
+    --pri-rgb:103,80,164 !important;               /* Material3 紫 #6750A4 */
+    --pri:rgb(var(--pri-rgb)) !important;
+    --my-bg:rgb(var(--pri-rgb)) !important;
+    --my-fg:#FFFFFF;
+    --glass-bg:var(--sf) !important;
+    --glass-bg-soft:var(--sf1) !important;
+    --glass-border:var(--linev) !important;
+    --glass-line:var(--linev) !important;
+    --glass-inset:none !important;
+    --glass-shadow:0 2px 10px rgba(0,0,0,.06) !important;
+    --glass-soft:none !important;
+    --glass-in:var(--sf1) !important;
+    --glass-my:var(--my-bg) !important;
+    background:var(--bg) !important;
+    animation:none !important;
+    will-change:auto !important;
+  }
+  @media (prefers-color-scheme:dark){
+    html:not([data-scheme="light"]) body[data-mode="standard"][data-glass="off"]{
+      --pri-rgb:208,188,255 !important;             /* Material3 深色紫 #D0BCFF */
+      --pri:rgb(var(--pri-rgb)) !important;
+      --my-bg:rgb(var(--pri-rgb)) !important;
+      --my-fg:#381E72;
+    }
+  }
+  html[data-scheme="dark"] body[data-mode="standard"][data-glass="off"]{
+    --pri-rgb:208,188,255 !important;
+    --pri:rgb(var(--pri-rgb)) !important;
+    --my-bg:rgb(var(--pri-rgb)) !important;
+    --my-fg:#381E72;
+  }
+  body[data-mode="standard"][data-glass="off"] #topbar,
+  body[data-mode="standard"][data-glass="off"] #users-top,
+  body[data-mode="standard"][data-glass="off"] #set-top,
+  body[data-mode="standard"][data-glass="off"] #ai-top,
+  body[data-mode="standard"][data-glass="off"] #composer,
+  body[data-mode="standard"][data-glass="off"] #ai-composer,
+  body[data-mode="standard"][data-glass="off"] #nav-bar,
+  body[data-mode="standard"][data-glass="off"] .login-box,
+  body[data-mode="standard"][data-glass="off"] .modal-card{
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+  }
+  body[data-mode="standard"][data-glass="off"] .msg.other .body,
+  body[data-mode="standard"][data-glass="off"] .msg.me .body{
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+    border:0;
+    box-shadow:none;
+  }
+  body[data-mode="standard"][data-glass="off"] #modal{
+    background:rgba(0,0,0,.35);
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+  }
+</style>
+</head>
+<body data-theme="glass" data-mode="standard" data-glass="on">
+  <div id="scan"></div>
+  <div id="pixel-noti-wrap"></div>
+
+  <!-- ===== 登录 ===== -->
+  <section id="login-view">
+    <div class="login-box">
+      <h1 id="brand">Uma-Chat</h1>
+      <p class="sub" id="brand-sub">局域网 · 极简 · 免注册</p>
+      <label>昵称</label>
+      <input id="in-name" autocomplete="off" placeholder="输入昵称">
+      <label>服务器</label>
+      <input id="in-server" autocomplete="off" placeholder="http://192.168.1.5:8080">
+      <label>密码</label>
+      <input id="in-pass" type="password" autocomplete="off" placeholder="房间密码">
+      <button id="btn-login">进入聊天室</button>
+      <p class="tip" id="login-tip">同一局域网内填同一服务器地址即可互相聊天</p>
+    </div>
+  </section>
+
+  <!-- ===== 聊天 ===== -->
+  <section id="chat-view" class="hidden">
+    <header id="topbar">
+      <div id="room-title">公共聊天区</div>
+      <span id="conn-chip" class="conn-chip" title="连接状态"><span id="conn-text">连接中</span></span>
+      <button id="menu-btn" title="菜单">&#8942;</button>
+    </header>
+
+    <div id="messages"></div>
+
+    <div id="composer">
+      <textarea id="input" rows="1" placeholder="说点什么…"></textarea>
+      <button id="send-btn">发送</button>
+    </div>
+
+  </section>
+
+  <!-- ===== 底部导航栏（悬浮于输入区之上，点 ⋮ 平滑上滑覆盖输入区） ===== -->
+  <nav id="nav-bar">
+    <button class="nav-item" data-tab="public"><span class="ic">&#9873;</span><em>公共</em></button>
+    <button class="nav-item" data-tab="private"><span class="ic">&#128100;</span><em>通讯录</em></button>
+    <button class="nav-item" data-tab="ai"><span class="ic">&#128031;</span><em>AI</em></button>
+    <button class="nav-item" data-tab="settings"><span class="ic">&#9881;</span><em>设置</em></button>
+  </nav>
+
+  <!-- ===== 通讯录 ===== -->
+  <section id="users-view" class="hidden">
+    <header id="users-top">
+      <button id="users-back">&#8592;</button>
+      <div id="users-title">通讯录</div>
+    </header>
+    <div id="user-list"></div>
+  </section>
+
+  <!-- ===== AI 助手 ===== -->
+  <section id="ai-view" class="hidden">
+    <header id="ai-top">
+      <button id="ai-back">&#8592;</button>
+      <div class="ai-title">AI 助手</div>
+      <button id="ai-cfg-btn" title="AI 设置">&#9881;</button>
+    </header>
+    <div id="ai-messages"></div>
+    <div id="ai-composer">
+      <textarea id="ai-input" rows="1" placeholder="和大肥鱼说点什么…"></textarea>
+      <button id="ai-send">发送</button>
+    </div>
+  </section>
+
+  <!-- ===== 设置 ===== -->
+  <section id="settings-view" class="hidden">
+    <header id="set-top">
+      <button id="set-back">&#8592;</button>
+      <div>设置</div>
+    </header>
+    <div class="set-body">
+      <div class="set-group">
+        <div class="set-label">更多设置</div>
+        <div class="sw-row"><span class="sw-name">上线通知</span><div class="sw" id="sw-online"></div></div>
+        <div class="sw-row"><span class="sw-name">登录通知</span><div class="sw" id="sw-connect"></div></div>
+        <div class="sw-row"><span class="sw-name">下线通知</span><div class="sw" id="sw-offline"></div></div>
+      </div>
+      <div class="set-group">
+        <div class="set-label">AI机器人（DS-Flash4.1）</div>
+        <div class="sw-row"><span class="sw-name">DS-Flash4.1 进公共聊天区</span><div class="sw" id="sw-bot"></div></div>
+        <p class="dm-note">开启后，AI机器人会作为普通成员在公共聊天区参与聊天；<b>关闭则完全收不到公共消息</b>（连消息都不进它上下文）。它不会进入私聊。</p>
+        <div class="sw-row"><span class="sw-name">密钥状态</span><b id="bot-key-state">检测中…</b></div>
+        <input class="ai-in" id="bot-key" type="password" autocomplete="off" spellcheck="false" placeholder="粘贴 DeepSeek API Key（sk-...）">
+        <input class="ai-in" id="bot-model" autocomplete="off" spellcheck="false" placeholder="模型（留空默认 deepseek-chat）">
+        <button class="set-btn" id="bot-key-save">保存密钥</button>
+        <button class="set-btn danger" id="bot-key-clear">清除密钥</button>
+        <p class="set-label" style="margin-top:16px">角色卡（人设）</p>
+        <textarea class="ai-in" id="bot-persona" rows="4" spellcheck="false" placeholder="留空则用默认人设。这里写的就是机器人的 System Prompt…"></textarea>
+        <p class="ai-hint" id="bot-persona-status">改完停手约 1 秒会自动保存</p>
+        <button class="set-btn" id="bot-persona-save">立即保存角色卡</button>
+        <button class="set-btn danger" id="bot-persona-reset">恢复默认人设</button>
+        <p class="ai-hint">这里写的是机器人的 System Prompt（它的人设与说话风格）。<b>改完停手会自动保存并立即生效</b>，无需重启；最长 4000 字。留空不会自动保存，要还原请点「恢复默认人设」。</p>
+        <p class="ai-hint">密钥保存在<b>服务器本机</b>，保存后立即生效、无需重启，也不会被上传到其它地方。</p>
+      </div>
+      <div class="set-group">
+        <div class="set-label">主题风格</div>
+        <div class="seg" id="seg-theme">
+          <button data-theme="glass" class="on">液态玻璃</button>
+          <button data-theme="m3">Material3</button>
+          <button data-theme="terminal">终端</button>
+        </div>
+      </div>
+      <div class="set-group">
+        <div class="set-label">深浅模式</div>
+        <div class="seg" id="seg-scheme">
+          <button data-scheme="light">浅色</button>
+          <button data-scheme="dark">深色</button>
+        </div>
+      </div>
+      <div class="set-group">
+        <div class="set-label">主题色</div>
+        <div class="seg" id="seg-accent">
+          <button data-accent="purple" class="on">暖紫</button>
+          <button data-accent="green">绿</button>
+          <button data-accent="blue">蓝</button>
+        </div>
+      </div>
+      <div class="set-group">
+        <div class="set-label">字号</div>
+        <div class="seg" id="seg-font">
+          <button data-font="s" class="on">小</button>
+          <button data-font="m">中</button>
+          <button data-font="l">大</button>
+        </div>
+      </div>
+      <div class="set-group">
+        <div class="set-label">私密聊天 · 端到端加密</div>
+        <div class="set-row"><span>状态</span><b id="dm-state">未解锁</b></div>
+        <button class="set-btn" id="dm-unlock-btn">解锁私密聊天</button>
+        <button class="set-btn" id="dm-lock-btn">立即锁定</button>
+        <button class="set-btn danger" id="dm-reset-btn">重置私密口令</button>
+        <p class="dm-note">私聊内容在本机用 AES-256-GCM 加密后才交给服务器转发，服务器与网络都读不到；密钥由「私密口令」在本机派生，永不外传。<br>公共聊天区不加密，保持原样。<br><b>忘记口令？</b>点"重置私密口令"可重新设置（旧私聊记录将无法再解密）。</p>
+      </div>
+      <div class="set-group">
+        <div class="set-label">账号</div>
+        <div class="set-row"><span>当前昵称</span><b id="val-name">-</b></div>
+        <div class="set-row"><span>当前服务器</span><b id="val-server">-</b></div>
+      </div>
+      <div class="set-group">
+        <div class="set-label">更换服务器 / 密码</div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin:8px 0 4px;">服务器地址</label>
+        <input class="ai-in" id="set-server" autocomplete="off" placeholder="http://192.168.1.5:8080">
+        <label style="font-size:12px;color:var(--muted);display:block;margin:10px 0 4px;">房间密码</label>
+        <input class="ai-in" id="set-pass" type="password" autocomplete="off" placeholder="房间密码（留空则不修改）">
+        <button class="set-btn" id="set-server-save">保存并重连</button>
+        <p class="ai-hint">修改后会断开当前连接并以新服务器/密码重新登录。</p>
+      </div>
+      <div class="set-group">
+        <div class="set-label">数据</div>
+        <button class="set-btn" id="row-export">导出聊天记录</button>
+        <button class="set-btn danger" id="row-clear">清空本地聊天记录</button>
+        <button class="set-btn danger" id="ai-clear">清空与ai的聊天记录</button>
+      </div>
+      <div class="set-group">
+        <div class="set-label">AI 助手（DeepSeek）</div>
+        <div class="set-row"><span>接口地址</span></div>
+        <input class="ai-in" id="ai-base" autocomplete="off" placeholder="https://api.deepseek.com">
+        <div class="set-row"><span>API Key</span></div>
+        <input class="ai-in" id="ai-key" type="password" autocomplete="off" placeholder="sk-...">
+        <div class="set-row"><span>模型</span></div>
+        <input class="ai-in" id="ai-model" autocomplete="off" placeholder="deepseek-chat">
+        <div class="set-row"><span>人格设定</span></div>
+        <textarea class="ai-in" id="ai-persona" rows="3" placeholder="你是deepseek，外号大肥鱼…"></textarea>
+        <button class="set-btn" id="ai-save">保存 AI 设置</button>
+        <p class="ai-hint">修改后自动保存。只使用流式输出。API Key 仅保存在本机，不会上传。</p>
+      </div>
+      <div class="set-group">
+        <div class="set-label">关于</div>
+        <div class="about-box" id="about-box">
+          <div class="about-title">Uma-Chat</div>
+          <div class="about-line">作者：Operit（AI）</div>
+          <div class="about-line">版本：<span id="about-ver">3.7</span></div>
+        </div>
+        <button class="set-btn" id="row-about">关于 Uma-Chat</button>
+      </div>
+      <button class="set-btn danger" id="row-logout">退出登录</button>
+      <p class="egg-hint" id="egg">~ still in love ~</p>
+    </div>
+  </section>
+
+  <!-- ===== 模态（关于 / 导出） ===== -->
+  <div id="modal" class="hidden">
+    <div class="modal-card">
+      <div class="modal-title" id="modal-title">标题</div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-actions" id="modal-actions">
+        <button id="modal-close">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 彩蛋图标（设置页右下角） ===== -->
+  <div id="egg-fab" class="hidden" title="控制台">✦</div>
+
+  <!-- ===== 悬浮控制台（假悬浮窗） ===== -->
+  <div id="console" class="hidden">
+    <div id="console-bar">
+      <div id="console-fold" title="关闭">✕</div>
+      <div class="c-title">菜单</div>
+      <div style="width:24px"></div>
+    </div>
+    <div id="console-body">
+      <div id="console-cats">
+        <div class="c-cat on" data-cat="notice">通知</div>
+        <div class="c-cat" data-cat="anim">动画</div>
+        <div class="c-cat" data-cat="egg">彩蛋</div>
+        <div class="c-cat" data-cat="log">日志</div>
+      </div>
+      <div id="console-pane"></div>
+    </div>
+    <div id="console-demo"><span class="demo-empty">动画预览区</span></div>
+  </div>
+
+  <div id="egg-screen" class="hidden">
+    <div id="egg-text"></div>
+  </div>
+  <div id="toast" class="hidden"></div>
+<script>
+/* ===== 运行日志 / 错误闪屏（必须先于主脚本安装，才能捕获早期错误） ===== */
+(function(){
+  var LOG=[], MAX=140, box=null, LS_KEY='uma_runlog_v1', LS_MAX=500;
+  function pad(n){ return ('0'+n).slice(-2); }
+  function ts(){ var d=new Date(); return pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds()); }
+  function push(kind,msg){ LOG.push('['+ts()+'] '+kind+' '+msg); if(LOG.length>MAX) LOG.shift(); persist(); }
+  /* 修复：运行日志落盘，关掉页面/重启后依然能在「运行日志」里看到历史 */
+  function persist(){
+    try{ var arr=LOG.slice(-LS_MAX); localStorage.setItem(LS_KEY, JSON.stringify(arr)); }catch(e){}
+  }
+  function loadPersist(){
+    try{
+      var s=localStorage.getItem(LS_KEY);
+      if(!s) return;
+      var arr=JSON.parse(s);
+      if(arr && arr.length){ LOG=arr.slice(-MAX); }
+    }catch(e){}
+  }
+  loadPersist();
+  function fmt(a){
+    try{
+      if(a instanceof Error) return (a.stack || a.message || String(a));
+      if(a && typeof a==='object') return JSON.stringify(a);
+      return String(a);
+    }catch(e){ return String(e); }
+  }
+  function dump(){ return LOG.join('\n'); }
+  window.__umaLog = { push:push, dump:dump, save:persist, clear:function(){ LOG=[]; try{ localStorage.removeItem(LS_KEY); }catch(e){} } };
+
+  function legacyCopy(str){
+    try{
+      var ta=document.createElement('textarea');
+      ta.value=str; ta.setAttribute('readonly','');
+      ta.style.cssText='position:fixed;left:-9999px;top:0;opacity:0;';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      ta.setSelectionRange(0, str.length);
+      var ok=document.execCommand('copy');
+      document.body.removeChild(ta);
+      return ok;
+    }catch(e){ return false; }
+  }
+  function hide(){ if(box) box.classList.add('hidden'); }
+  function doCopy(){
+    if(!box) return;
+    var txt = dump() || '(无日志)';
+    function done(){ hide(); }
+    function fallback(){
+      if(legacyCopy(txt)){ done(); return; }
+      // 平台无法复制时的兜底：提示手动复制，并放开关闭按钮，避免卡死
+      box.classList.remove('strict');
+      var cb=box.querySelector('#err-copy');
+      if(cb) cb.textContent='复制失败 · 长按日志手动复制';
+    }
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(done, fallback);
+        return;
+      }
+    }catch(e){}
+    fallback();   // 复制成功即自动关闭；不提供其它关闭方式
+  }
+  function build(){
+    if(box) return box;
+    if(!document.body) return null;
+    box=document.createElement('div');
+    box.id='errlog'; box.className='hidden';
+    box.innerHTML='<div class="err-card">'+
+      '<div class="err-head">运行日志 · 出错了</div>'+
+      '<div class="err-body" id="err-text"></div>'+
+      '<div class="err-acts">'+
+        '<button class="err-copy" id="err-copy">复制日志</button>'+
+        '<button class="err-close" id="err-close">关闭</button>'+
+      '</div>'+
+    '</div>';
+    document.body.appendChild(box);
+    var cb=box.querySelector('#err-copy');
+    if(cb) cb.addEventListener('click', doCopy);
+    var xb=box.querySelector('#err-close');
+    if(xb) xb.addEventListener('click', hide);
+    return box;
+  }
+  function show(strict){
+    var b=build();
+    if(!b){ document.addEventListener('DOMContentLoaded', function(){ show(strict); }); return; }
+    b.classList.toggle('strict', strict !== false);   // 默认严格：出错时必须复制日志才能关闭
+    var el=b.querySelector('#err-text');
+    if(el){ el.textContent=dump(); el.scrollTop=el.scrollHeight; }
+    b.classList.remove('hidden');
+  }
+  window.__umaShowLog=show;
+
+  var ce=console.error;
+  console.error=function(){
+    try{ push('CONSOLE', [].map.call(arguments, fmt).join(' ')); show(); }catch(e){}
+    try{ ce.apply(console, arguments); }catch(e){}
+  };
+  window.addEventListener('error', function(ev){
+    var m;
+    if(ev && ev.message){
+      m=ev.message;
+      if(ev.filename) m += ' @ '+String(ev.filename).split('/').pop()+':'+(ev.lineno||'?')+':'+(ev.colno||'?');
+      if(ev.error && ev.error.stack) m += '\n'+ev.error.stack;
+    }else if(ev && ev.target && (ev.target.src || ev.target.href)){
+      m='资源加载失败: '+(ev.target.src||ev.target.href);
+    }else{ m='未知错误'; }
+    push('ERROR', m); show();
+  }, true);
+  window.addEventListener('unhandledrejection', function(ev){
+    push('PROMISE', fmt(ev && ev.reason)); show();
+  });
+  push('BOOT','运行日志已启动');
+})();
+</script>
+<script>
+/* ===== Pixel 风通知 ===== */
+function notify(title, text, kind){
+  var wrap = document.getElementById('pixel-noti-wrap');
+  if(!wrap) return;
+  var n = document.createElement('div');
+  n.className = 'pixel-noti';
+  var icon = (kind === 'connect' || kind === 'join') ? '✓'
+           : (kind === 'leave' ? '−' : 'i');
+  var gray = (kind === 'leave');
+  n.innerHTML =
+    '<div class="ic'+(gray?' gray':'')+'">'+icon+'</div>'+
+    '<div class="tx"><div class="t1"></div><div class="t2"></div></div>';
+  n.querySelector('.t1').textContent = title;
+  n.querySelector('.t2').textContent = text || '';
+  wrap.appendChild(n);
+  requestAnimationFrame(function(){ n.classList.add('show'); });
+  setTimeout(function(){
+    n.classList.remove('show');
+    setTimeout(function(){ n.remove(); }, 450);
+  }, 3200);
+}
+(function(){
+"use strict";
+var $ = function(id){ return document.getElementById(id); };
+
+/* ---------- 存储键（Uma-Chat 命名） ---------- */
+var K_SERVER='uma.server', K_NAME='uma.name', K_PASS='uma.pass',
+    K_THEME='uma.theme', K_FONT='uma.font', K_MSG='uma.msgs', K_READY='uma.ready',
+    K_SCHEME='uma.scheme', K_DMV='uma.dmv', K_ACCENT='uma.accent';
+var K_CONTACTS='uma.contacts';
+var K_N_JOIN='uma.noti.join', K_N_LEAVE='uma.noti.leave', K_N_CONNECT='uma.noti.connect';
+var K_BOTMODEL='uma.botmodel';
+var HIST_MAX=500, PUB='__public';
+
+/* ---------- 通知开关（真生效） ---------- */
+function notiOn(key, def){
+  var v = loadStore(key, def===undefined?true:def);
+  return v!==false && v!=='0';
+}
+function applySwitches(){
+  var defs=[['sw-online',K_N_JOIN],['sw-offline',K_N_LEAVE],['sw-connect',K_N_CONNECT]];
+  for(var i=0;i<defs.length;i++){
+    var el=$(defs[i][0]); if(!el) continue;
+    el.classList.toggle('on', notiOn(defs[i][1]));
+  }
+}
+function bindSwitches(){
+  var defs=[['sw-online',K_N_JOIN],['sw-offline',K_N_LEAVE],['sw-connect',K_N_CONNECT]];
+  for(var i=0;i<defs.length;i++){
+    var el=$(defs[i][0]); if(!el || el.__bound) continue; el.__bound=true;
+    el.onclick=(function(key, node){ return function(){
+      var next = !node.classList.contains('on');
+      node.classList.toggle('on', next);
+      saveStore(key, next);
+    }; })(defs[i][1], el);
+  }
+  applySwitches();
+}
+/* ---------- 角色卡自动保存 ---------- */
+var _personaTimer=null, _personaPending=false;
+function botPersonaStatus(t){ var el=$('bot-persona-status'); if(el) el.textContent=t; }
+function botPersonaSaveNow(manual){
+  var pa=$('bot-persona'); if(!pa) return false;
+  var v=(pa.value||'').trim();
+  if(!v){ _personaPending=false; botPersonaStatus('留空不会自动保存；要还原请点「恢复默认人设」'); return false; }
+  if(v.length>4000){ _personaPending=false; botPersonaStatus('过长（最多 4000 字），未保存'); return false; }
+  if(!send({type:'botpersona', persona:v})){ _personaPending=true; botPersonaStatus('未连接服务器，已暂存，连上后自动重试'); return false; }
+  _personaPending=false;
+  botPersonaStatus('已自动保存 ✓'+(manual&&manual===true?'（手动）':''));
+  return true;
+}
+function bindPersonaAutosave(){
+  var pa=$('bot-persona'); if(!pa || pa.__autoBound) return; pa.__autoBound=true;
+  pa.addEventListener('input', function(){
+    botPersonaStatus('编辑中…');
+    if(_personaTimer) clearTimeout(_personaTimer);
+    _personaTimer=setTimeout(function(){ _personaTimer=null; botPersonaSaveNow(false); }, 1200);
+  });
+  pa.addEventListener('blur', function(){
+    if(_personaTimer){ clearTimeout(_personaTimer); _personaTimer=null; botPersonaSaveNow(false); }
+  });
+}
+/* ---------- AI机器人（DS-Flash4.1）开关 + 密钥 ---------- */
+function botKeyStateSet(st){
+  var el=$('bot-key-state'); if(!el) return;
+  if(!st || typeof st.hasKey==='undefined'){ el.textContent='未知'; return; }
+  el.textContent = st.hasKey ? ('已配置 '+(st.mask||'')+(st.enabled?' · 已开启':' · 已关闭')) : '未配置';
+  var sw=$('sw-bot'); if(sw && typeof st.enabled!=='undefined'){ sw.classList.toggle('on', !!st.enabled); }
+  var pa=$('bot-persona');
+  if(pa && document.activeElement!==pa && !_personaTimer && !_personaPending && typeof st.persona==='string'){ pa.value=st.persona; }
+}
+function queryBotConfig(){ send({type:'botcfg', query:true}); }
+function bindBot(){
+  var sw=$('sw-bot');
+  if(sw && !sw.__botBound){
+    sw.__botBound=true;
+    sw.onclick=function(){
+      if(!state.joined){ toast('未连接服务器，无法切换'); return; }
+      var next=!sw.classList.contains('on');
+      if(!send({type:'bot', on:next})){ toast('未连接服务器，无法切换'); return; }
+      sw.classList.toggle('on', next);
+    };
+  }
+  var mi=$('bot-model');
+  if(mi && !mi.__botBound){ mi.__botBound=true; mi.value=loadStore(K_BOTMODEL,''); }
+  var sv=$('bot-key-save');
+  if(sv && !sv.__botBound){
+    sv.__botBound=true;
+    sv.onclick=function(){ try{ sv.blur(); }catch(e){}
+      var kb=$('bot-key'), mb=$('bot-model');
+      var key=(kb&&kb.value||'').trim(), model=(mb&&mb.value||'').trim();
+      if(!key){ toast('请先粘贴 DeepSeek API Key'); return; }
+      if(!send({type:'botcfg', apiKey:key, model:model})){ toast('未连接服务器，无法保存'); return; }
+      saveStore(K_BOTMODEL, model);
+      if(kb) kb.value='';
+      toast('密钥已提交，正在生效…');
+    };
+  }
+  var cl=$('bot-key-clear');
+  if(cl && !cl.__botBound){
+    cl.__botBound=true;
+    cl.onclick=function(){ try{ cl.blur(); }catch(e){}
+      if(!send({type:'botcfg', clear:true})){ toast('未连接服务器，无法清除'); return; }
+      toast('已请求清除密钥…');
+    };
+  }
+  var ps=$('bot-persona-save');
+  if(ps && !ps.__botBound){
+    ps.__botBound=true;
+    ps.onclick=function(){ try{ ps.blur(); }catch(e){}
+      var pa=$('bot-persona');
+      if(!pa || !(pa.value||'').trim()){ toast('角色卡不能为空；要恢复默认请点「恢复默认人设」'); return; }
+      if(botPersonaSaveNow(true)) toast('角色卡已保存，正在生效…');
+      else toast('未连接服务器，已暂存，连上后自动重试');
+    };
+  }
+  bindPersonaAutosave();
+  var pr=$('bot-persona-reset');
+  if(pr && !pr.__botBound){
+    pr.__botBound=true;
+    pr.onclick=function(){
+      if(_personaTimer){ clearTimeout(_personaTimer); _personaTimer=null; }
+      _personaPending=false;
+      if(!send({type:'botpersona', persona:''})){ toast('未连接服务器，无法恢复'); return; }
+      botPersonaStatus('已恢复默认人设 ✓');
+      toast('已请求恢复默认人设…');
+    };
+  }
+}
+var RECONNECT_MS=[1000,2000,4000,8000,15000];
+var HEARTBEAT_MS=20000;   // 客户端应用层心跳间隔（每20s发一次 ping）
+var HB_TIMEOUT_MS=45000;  // 超过45s没收到服务器任何消息 → 判定“假连接”，强制重连
+
+var state = {
+  me:'', server:'', tab:'public', room:PUB, online:[],
+  ws:null, tryN:0, timer:null, joined:false, navOpen:false, eggN:0,
+  lastRx:0, everJoined:false, hbTimer:null, deadConn:false, welcomeName:'',
+  contacts:{}
+};
+
+function loadStore(k,d){ try{ var v=localStorage.getItem(k); return v===null?d:JSON.parse(v);}catch(e){ return d; } }
+function saveStore(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+function getHist(){ return loadStore(K_MSG,{}); }
+function pushHist(who,m){ var h=getHist(); if(!h[who])h[who]=[]; h[who].push(m); if(h[who].length>HIST_MAX)h[who]=h[who].slice(-HIST_MAX); saveStore(K_MSG,h); }
+function clearHist(){ saveStore(K_MSG,{}); }
+
+/* ---------- 通讯录管理 ---------- */
+function loadContacts(){ try{ var c=loadStore(K_CONTACTS,{}); return (c&&typeof c==='object')?c:{}; }catch(e){ return {}; } }
+function saveContacts(){ saveStore(K_CONTACTS, state.contacts); }
+function syncContactsFromOnline(){
+  var online = state.online || [];
+  for(var i=0;i<online.length;i++){
+    var n=online[i];
+    if(!n || n===state.me) continue;
+    if(!state.contacts[n]) state.contacts[n]={name:n, added:Date.now()};
+    state.contacts[n].lastSeen=Date.now();
+  }
+  saveContacts();
+}
+function isOnline(name){ return (state.online||[]).indexOf(name)>=0; }
+
+/* ---------- toast 通知 ---------- */
+var toastTimer=null;
+function toast(msg, ms){
+  ms = ms || 3000;
+  var t=$('toast'); t.textContent=msg; t.classList.remove('hidden');
+  t.classList.add('show');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){t.classList.add('hidden');},300); }, ms);
+}
+
+/* ---------- 主题 / 字号（平滑切换） ---------- */
+function withSwap(cls, fn){
+  var b=document.body, list=cls.split(' ');
+  list.forEach(function(c){ b.classList.add(c); });
+  void b.offsetWidth;                 // 强制回流，确保过渡生效
+  fn();
+  setTimeout(function(){ list.forEach(function(c){ b.classList.remove(c); }); }, 360);
+}
+function applyTheme(t){
+  if(t!=='glass'&&t!=='m3'&&t!=='terminal') t='glass';   /* 兼容旧值 pixel → glass */
+  withSwap('theming fonting', function(){
+    document.body.setAttribute('data-theme',t);
+    document.body.setAttribute('data-mode', t==='terminal'?'terminal':'standard');
+    document.body.setAttribute('data-glass', t==='glass'?'on':'off');
+  });
+  var seg=$('seg-theme'); if(seg){ [].forEach.call(seg.querySelectorAll('button'),function(b){ b.classList.toggle('on', b.getAttribute('data-theme')===t); }); }
+  saveStore(K_THEME,t);
+}
+function applyFont(f){
+  withSwap('fonting', function(){ document.body.setAttribute('data-font',f); });
+  var seg=$('seg-font'); if(seg){ [].forEach.call(seg.querySelectorAll('button'),function(b){ b.classList.toggle('on', b.getAttribute('data-font')===f); }); }
+  saveStore(K_FONT,f);
+}
+/* 深浅模式：light / dark / ''（空=跟随系统）。用独立属性 data-scheme，避免与 data-theme（Pixel/终端）冲突 */
+function applyScheme(s){
+  withSwap('theming', function(){
+    var el=document.documentElement;
+    if(s==='light'||s==='dark') el.setAttribute('data-scheme', s);
+    else { el.removeAttribute('data-scheme'); s=''; }
+  });
+  var seg=$('seg-scheme'); if(seg){ [].forEach.call(seg.querySelectorAll('button'),function(b){ b.classList.toggle('on', b.getAttribute('data-scheme')===s); }); }
+  saveStore(K_SCHEME, s);
+}
+/* 主题色：purple(默认) / green / blue。用独立属性 data-accent，深浅两套值由 CSS 自动切换 */
+function applyAccent(a){
+  withSwap('theming', function(){
+    var el=document.documentElement;
+    if(a==='green'||a==='blue') el.setAttribute('data-accent', a);
+    else { el.removeAttribute('data-accent'); a='purple'; }
+  });
+  var seg=$('seg-accent'); if(seg){ [].forEach.call(seg.querySelectorAll('button'),function(b){ b.classList.toggle('on', b.getAttribute('data-accent')===a); }); }
+  saveStore(K_ACCENT, a==='purple'?'':a);
+}
+
+/* ---------- 气泡渲染 ---------- */
+function isHiddenSys(m){
+  if(!m || !m.sys) return false;
+  if(m.hidden) return true;
+  var t = String(m.text||'');
+  return t.indexOf('已连接到服务器')>=0 || t.indexOf('加入了聊天室')>=0 || t.indexOf('离开了聊天室')>=0;
+}
+function bubbleEl(m, who){
+  if(isHiddenSys(m)) return null;
+  var d=document.createElement('div');
+  var mine = (m.from===state.me);
+  d.className='msg '+(mine?'me':'other')+(m.sys?' sys':'');
+  var meta=document.createElement('div'); meta.className='meta';
+  meta.textContent = (m.sys? '系统' : (mine?'我':m.from)) + (m.t? ' · '+fmtTime(m.t) : '');
+  var body=document.createElement('div'); body.className='body';
+  if(!m.sys && who && who!==PUB && dmIsEnc(m.text)){
+    // 私聊：密文先解密再显示
+    var pt = _dmKey ? (_dmCache[m.text]!==undefined ? _dmCache[m.text] : dmPendingDecrypt(m.text, who)) : null;
+    if(pt===null){
+      body.textContent = _dmKey ? '🔒 解密中…' : '🔒 加密私聊 · 点击解锁';
+      body.classList.add('dm-locked');
+      body.onclick=function(){ if(!dmUnlocked()) openDmUnlock(); };
+    } else {
+      body.textContent = pt;
+    }
+  } else {
+    body.textContent = m.text;
+  }
+  d.appendChild(meta); d.appendChild(body);
+  return d;
+}
+function fmtTime(t){ try{ var d=new Date(t); return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }catch(e){ return ''; } }
+
+function renderRoom(who){
+  var box=$('messages'); box.innerHTML='';
+  var h=getHist()[who]||[];
+  for(var i=0;i<h.length;i++){ var el=bubbleEl(h[i],who); if(el) box.appendChild(el); }
+  scrollBottom();
+}
+function appendOne(m,who){
+  var box=$('messages');
+  if(state.room===who){ box.appendChild(bubbleEl(m,who)); scrollBottom(); }
+}
+function scrollBottom(){ var b=$('messages'); b.scrollTop=b.scrollHeight; }
+
+/* ---------- 房间切换 ---------- */
+function openRoom(who, title){
+  state.room=who;
+  $('room-title').textContent = title || (who===PUB?'公共聊天区':who);
+  renderRoom(who);
+}
+function openPublic(){
+  state.tab='public';
+  closeNav();
+  showView('chat');
+  openRoom(PUB,'公共聊天区');
+}
+
+/* ---------- 视图切换（整页双向推拉，两页同时滑动） ---------- */
+var VIEW_IDS={ login:'login-view', chat:'chat-view', users:'users-view', ai:'ai-view', settings:'settings-view' };
+var VIEW_LV = { login:-1, chat:0, users:1, ai:2, settings:2 };   // 层级：越靠右越深
+var _viewNow=null;
+function showView(name){
+  var to=$(VIEW_IDS[name]); if(!to) return;
+  var fromName=_viewNow, from=(fromName && fromName!==name) ? $(VIEW_IDS[fromName]) : null;
+  _viewNow=name;
+
+  $('modal').classList.add('hidden');
+  // 开关只在设置页显示；控制台窗口保留（需手动 ✕ 关闭）
+  var fab=$('egg-fab');
+  if(fab) fab.classList.toggle('hidden', name!=='settings');
+
+  // 目标页显示，其余隐藏；旧页先留着，与目标页一起做推拉
+  Object.keys(VIEW_IDS).forEach(function(v){
+    var el=$(VIEW_IDS[v]); if(!el) return;
+    if(v===name) return;
+    if(from && v===fromName) return;
+    el.classList.add('hidden');
+  });
+  // 清除目标页上可能残留的旧动画，保证从基准位置开始
+  if(to.getAnimations) [].forEach.call(to.getAnimations(), function(a){ try{ a.cancel(); }catch(e){} });
+  to.classList.remove('hidden');
+  to.style.opacity=''; to.style.transform='';
+  markNav();
+
+  if(!from) return;
+  if(!to.animate){ from.classList.add('hidden'); return; }
+  if(from.getAnimations) [].forEach.call(from.getAnimations(), function(a){ try{ a.cancel(); }catch(e){} });
+
+  // 方向：进入更深的页（公共→私聊/公共→设置/私聊→设置）新页由右侧滑入；
+  //       返回更浅的页（设置→公共 等）新页由左侧滑入。
+  var dir = (VIEW_LV[name] >= VIEW_LV[fromName]) ? 1 : -1;
+  var W = Math.round(window.innerWidth || 360);
+  var ease='cubic-bezier(.23,1,.32,1)', dur=300;
+  to.style.zIndex=20; from.style.zIndex=10;
+
+  // 两页同时滑动：新页从 ±W 滑到 0，旧页从 0 滑到 ∓W（文字跟着一起划走）
+  var aTo = to.animate(
+    [{ transform:'translateX('+(dir*W)+'px)' }, { transform:'translateX(0)' }],
+    { duration:dur, easing:ease, fill:'forwards' });
+  var aFrom = from.animate(
+    [{ transform:'translateX(0)' }, { transform:'translateX('+(-dir*W)+'px)' }],
+    { duration:dur, easing:ease, fill:'forwards' });
+
+  // 结束后先隐藏旧页、再撤销动画（同一帧内完成，因此不会回闪）
+  setTimeout(function(){
+    if(_viewNow!==name) return;          // 已被更新的切换接管
+    from.classList.add('hidden');
+    from.style.zIndex=''; to.style.zIndex='';
+    try{ aFrom.cancel(); }catch(e){}
+    try{ aTo.cancel(); }catch(e){}
+  }, dur+30);
+}
+
+/* ---------- 底部导航栏（⋮ 平滑上滑，覆盖输入区） ---------- */
+function openNav(){
+  state.navOpen=true;
+  var nb=$('nav-bar'); if(nb) nb.classList.add('open');
+  document.body.classList.add('nav-open');
+  markNav();
+}
+function closeNav(){
+  state.navOpen=false;
+  var nb=$('nav-bar'); if(nb) nb.classList.remove('open');
+  document.body.classList.remove('nav-open');
+}
+function markNav(){
+  var tab = (_viewNow==='settings') ? 'settings'
+          : (_viewNow==='ai')       ? 'ai'
+          : (_viewNow==='users')    ? 'private'
+          : (state.room===PUB ? 'public' : 'private');
+  [].forEach.call(document.querySelectorAll('.nav-item'),function(b){
+    b.classList.toggle('on', b.getAttribute('data-tab')===tab);
+  });
+}
+
+/* ---------- 网络 ---------- */
+function wsURL(server){
+  var s=String(server||'').trim().replace(/\/+$/,'');
+  if(!s) return '';
+  /* 内网穿透兼容：用户可能直接填域名（不带协议），或填 http/https */
+  if(/^wss?:\/\//i.test(s)) return s.replace(/\/$/,'') + '/ws';
+  if(/^https:\/\//i.test(s)) return s.replace(/^https:/i,'wss:')+'/ws';
+  if(/^http:\/\//i.test(s))  return s.replace(/^http:/i,'ws:')+'/ws';
+  /* 裸域名/IP:端口 —— 内网穿透常见格式，默认用 ws（明文），避免证书问题 */
+  return 'ws://'+s+'/ws';
+}
+/* 连接诊断：记录最后一次连接的URL和错误 */
+var _connDiag = { url:'', error:'', time:0 };
+function logConnDiag(url, err){
+  _connDiag={url:url, error:err||'', time:Date.now()};
+  if(window.__umaLog) window.__umaLog.push('WS', (url||'')+' '+(err||''));
+}
+/* ---------- 连接状态指示（真实状态：服务端确认才算“已连接”） ---------- */
+function setConn(kind, text){
+  var chip=$('conn-chip'); if(!chip) return;
+  chip.className='conn-chip '+(kind||'');
+  chip.title=text||'';
+  var t=$('conn-text'); if(t) t.textContent=text||'';
+}
+/* 服务端确认登录成功后才算“真连上”（欢迎语或在线名单到达即视为确认） */
+function markJoined(){
+  if(state.joined) return;
+  state.joined=true; state.tryN=0;
+  setConn('ok','已连接');
+  if(state.welcomeName){ toast('欢迎回来，'+state.welcomeName); state.welcomeName=''; }
+  else if(state.everJoined) toast('已重新连接');
+  state.everJoined=true;
+  flushOutbox(); /*连接恢复：自动补发暂存消息 */
+  queryBotConfig();   /* 连接后同步 AI 机器人开关/密钥状态 */
+  if(_personaPending) botPersonaSaveNow(false);   /* 角色卡断线补发 */
+}
+function scheduleReconnect(){
+  if(state.deadConn){ setConn('err','未连接'); if(state.timer){ clearTimeout(state.timer); state.timer=null; } return; } // 被服务器拒绝（密码错/重名等），停止盲目重连
+  if(state.timer) clearTimeout(state.timer);
+  var d=RECONNECT_MS[Math.min(state.tryN, RECONNECT_MS.length-1)];
+  state.tryN++;
+  setConn('warn','重连中');
+  state.timer=setTimeout(function(){ state.timer=null; connect(); }, d);
+}
+/* 踢掉假死连接并立刻进入重连流程（半开连接不会触发 onclose，必须主动处理） */
+function kickReconnect(why){
+  var ws=state.ws, was=state.joined;
+  if(ws){ try{ ws.onclose=null; ws.onerror=null; ws.onmessage=null; ws.onopen=null; ws.close(); }catch(e){} }
+  state.ws=null; state.joined=false; state.tryN=0;
+  if(was) toast('连接异常（'+(why||'超时')+'），正在自动重连…',3200);
+  scheduleReconnect();
+}
+/* 页面回到前台/网络恢复时调用：断线立刻重连；假死则踢掉重连 */
+function ensureConnected(){
+  if(state.deadConn) return;
+  if(!(state.me && state.server) || !loadStore(K_READY,false)) return;
+  var ws=state.ws;
+  if(!ws || ws.readyState>1){
+    if(state.timer){ clearTimeout(state.timer); state.timer=null; }
+    connect();
+  } else if(ws.readyState===1 && state.lastRx && (Date.now()-state.lastRx>HB_TIMEOUT_MS)){
+    kickReconnect('唤醒检测');
+  }
+}
+/* 应用层心跳：定时发 ping（服务端回 pong），同时用于识别“假连接” */
+function startHeartbeat(){
+  if(state.hbTimer) return;
+  state.hbTimer=setInterval(function(){
+    var ws=state.ws;
+    if(!ws || ws.readyState!==1) return;                         // 断开已由 onclose 兜底
+    if(Date.now()-state.lastRx>HB_TIMEOUT_MS){ kickReconnect('心跳超时'); return; }
+    try{ ws.send(JSON.stringify({type:'ping', t:Date.now()})); }catch(e){ kickReconnect('心跳发送失败'); }
+  }, HEARTBEAT_MS);
+}
+var outbox = [];   /* 断线补发队列（内存，最多50条） */
+function send(obj){
+  try{ if(state.ws && state.ws.readyState===1){ state.ws.send(JSON.stringify(obj)); return true; } }catch(e){}
+  return false;
+}
+function flushOutbox(){
+  if(!state.joined || !outbox.length) return;
+  var arr=outbox.splice(0, outbox.length);
+  var okN=0, failN=0;
+  arr.forEach(function(m){
+    if(m.type==='pub'){
+      if(send({type:'chat', text:m.text})) okN++; else failN++;
+    } else if(m.self){
+      if(send({type:'priv', to:m.to, text:m.pre})) okN++; else failN++;
+    } else {
+      if(_dmKey && m.pre){ if(send({type:'priv', to:m.to, text:m.pre})) okN++; else failN++; }
+      else failN++;
+    }
+  });
+  if(okN) toast('已自动补发 '+okN+'条暂存消息', 3200);
+  if(failN) toast(failN+'条暂存消息补发失败', 3600);
+}
+function handleMsg(m){
+  if(!m||!m.type) return;
+  if(m.type==='chat'){
+    if(m.from===state.me) return;             // 自己发的消息已在发送时本地渲染（初始帧），忽略服务器广播回显，避免重复显示
+    onChat(m);
+  }
+  else if(m.type==='sys'){ onSys(m.text); }
+  else if(m.type==='users'){ state.online=m.list||[]; syncContactsFromOnline(); renderUsers(); markJoined(); }
+  else if(m.type==='botinfo'){ botKeyStateSet(m); }
+  else if(m.type==='history'){ onHistory(m); }
+  else if(m.type==='priv'){
+    if(m.self || m.from===state.me) return;                       // 服务器回显（本机已存），忽略
+    onChat(m, true);
+    if(state.room!==m.from) toast('收到 '+m.from+' 的私聊消息');
+  }
+}
+function onChat(m, isPriv){
+  var who = isPriv ? m.from : PUB;
+  var item={from:m.from, text:m.text, t:m.t||Date.now()};
+  pushHist(who,item);
+  appendOne(item, who);
+}
+function getPubLastTs(){
+  var arr = (getHist()[PUB]) || [];
+  var max = 0;
+  for(var i=0;i<arr.length;i++){
+    var t = arr[i].t || 0;
+    if(t > max) max = t;
+  }
+  return max;
+}
+function onHistory(m){
+  var list = m.msgs || [];
+  if(!list.length) return;
+  var h = getHist();
+  var arr = h[PUB] || (h[PUB]=[]);
+  var added = 0;
+  for(var i=0;i<list.length;i++){
+    var x = list[i];
+    var dup = false;
+    for(var j=arr.length-1; j>=0 && j>=arr.length-30; j--){
+      if(arr[j].from===x.from && arr[j].t===x.t){ dup=true; break; }
+    }
+    if(dup) continue;
+    arr.push({from:x.from, text:x.text, t:x.t});
+    added++;
+  }
+  if(arr.length > HIST_MAX) h[PUB] = arr.slice(-HIST_MAX);
+  saveStore(K_MSG, h);
+  if(state.room===PUB) renderRoom(PUB);
+  if(added) toast('已同步 '+added+' 条离线消息', 2600);
+}
+/* ——去抖：离开延迟8秒显示；期内同名回来则上下线都不显示 —— */
+var leaveDebounce = {};
+function onSys(text){
+  text = (text==null? '' : String(text));
+  /* 服务器明确拒绝（密码错误/重名/空昵称）：停止自动重连，避免"踢-连"死循环 */
+  if(text.indexOf('房间密码错误')>=0 || text.indexOf('已被占用')>=0 || text.indexOf('昵称不能为空')>=0){
+    state.deadConn=true;
+    if(state.timer){ clearTimeout(state.timer); state.timer=null; }
+    setConn('err','未连接');
+    toast('服务器拒绝连接：'+text, 4200);
+  }
+  var item={from:'', text:text, t:Date.now(), sys:true};
+  // 判断是否为「连接 / 上线 / 下线」类系统消息
+  var kind=null, title=null, sub=null;
+  var mConnect = text.indexOf('已连接到服务器')>=0;
+  var mJoin    = text.indexOf('加入了聊天室')>=0;
+  var mLeave   = text.indexOf('离开了聊天室')>=0;
+  if(mConnect){
+    kind='connect'; title='已连接到服务器'; sub=state.server||'';
+  } else if(mJoin){
+    kind='join'; title=text.replace('加入了聊天室','').trim()+' 上线了'; sub='已加入聊天室';
+  } else if(mLeave){
+    kind='leave'; title=text.replace('离开了聊天室','').trim()+' 下线了'; sub='已离开聊天室';
+  }
+  /*去抖：leave 延迟8秒显示；8秒内同名回来则两边都不显示 */
+  if(kind==='leave'){
+    var whoL=text.replace('离开了聊天室','').trim();
+    if(leaveDebounce[whoL]) clearTimeout(leaveDebounce[whoL].timer);
+    leaveDebounce[whoL]={ timer: setTimeout(function(){
+      delete leaveDebounce[whoL];
+      item.hidden=true; pushHist(state.room,item);
+      if(notiOn(K_N_LEAVE)) notify(title, sub, 'leave');
+    }, 8000) };
+    return;
+  }
+  if(kind==='join'){
+    var whoJ=text.replace('加入了聊天室','').trim();
+    if(leaveDebounce[whoJ]){
+      clearTimeout(leaveDebounce[whoJ].timer); delete leaveDebounce[whoJ];
+      return; /*8秒内回来：上线/下线都不显示 */
+    }
+  }
+  if(kind){
+    if(kind==='connect') markJoined();   // 服务端欢迎语 = 确认真正连上了
+    // 只记账（带时间、标记 hidden 不渲染）+ 按开关决定是否弹 Pixel 通知
+    item.hidden=true;
+    pushHist(state.room,item);
+    var nk = (kind==='connect')?K_N_CONNECT : (kind==='join')?K_N_JOIN : K_N_LEAVE;
+    if(notiOn(nk)) notify(title, sub, kind);
+  } else {
+    // 其它系统消息（错误提示等）照旧显示
+    pushHist(state.room,item);
+    appendOne(item, state.room);
+  }
+}
+
+function connect(){
+  var cur=state.ws;
+  if(cur && (cur.readyState===0 || cur.readyState===1)) return;
+  if(cur){ try{ cur.onclose=null; cur.onerror=null; cur.onmessage=null; cur.onopen=null; cur.close(); }catch(e){} }
+  var url=wsURL(state.server);
+  logConnDiag(url, 'connecting');
+  var ws;
+  try{ ws=new WebSocket(url); }catch(e){
+    logConnDiag(url, 'constructor-error: '+(e&&e.message||e));
+    toast('连接失败：'+(e&&e.message||e), 4000);
+    scheduleReconnect(); return;
+  }
+  state.ws=ws; state.joined=false;
+  state.lastRx=Date.now();
+  setConn('warn','连接中');
+  var hs=setTimeout(function(){
+    if(ws===state.ws && ws.readyState===0){
+      logConnDiag(url, 'handshake-timeout');
+      kickReconnect('握手超时');
+    }
+  },12000);
+  ws.onopen=function(){
+    if(ws!==state.ws) return;
+    clearTimeout(hs);
+    state.lastRx=Date.now();
+    logConnDiag(url, 'opened');
+    send({type:'join', name:state.me, pass:loadStore(K_PASS,''), since:getPubLastTs()});
+  };
+  ws.onmessage=function(ev){
+    if(ws!==state.ws) return;
+    state.lastRx=Date.now();
+    var m; try{ m=JSON.parse(ev.data); }catch(e){ return; }
+    handleMsg(m);
+  };
+  ws.onclose=function(ev){
+    if(ws!==state.ws) return;
+    clearTimeout(hs);
+    var was=state.joined;
+    var code = ev && ev.code ? ev.code : '?';
+    var reason = ev && ev.reason ? ev.reason : '';
+    logConnDiag(url, 'closed code='+code+' '+reason);
+    state.ws=null; state.joined=false;
+    if(was) toast('连接已断开（code '+code+'），正在重连…',3200);
+    else if(code===1006){
+      toast('连接被拒绝（网络不通或证书错误），正在重试…',3600);
+    }
+    scheduleReconnect();
+  };
+  ws.onerror=function(){
+    if(ws!==state.ws) return;
+    logConnDiag(url, 'error-event');
+    try{ ws.close(); }catch(e){}
+  };
+}
+
+/* ================= 私密聊天 · 端到端加密（PSK，最多 2 人） =================
+   设计：私聊内容在本机用 AES-256-GCM 加密后再交给服务器转发，服务器/网络只能看到密文；
+        密钥由「私密口令」经 PBKDF2 在本机派生，永不外传、不落盘。
+        公共聊天区完全不加密，保持原样。                                        */
+var DM_TAG   = 'u1:';              // 密文标记
+var DM_SALT  = 'uma-chat-dm-v1';   // KDF 固定盐（双方一致）
+var DM_ITER  = 200000;             // PBKDF2 迭代次数
+var DM_MAXB  = 1400;               // 明文上限（密文须小于服务端 2000 上限）
+var _dmKey   = null;               // 会话内密钥
+var _dmCache = {};                 // 密文 -> 明文（会话内缓存）
+var _dmPending = {};
+
+function dmSupported(){
+  return !!(window.crypto && window.crypto.subtle && window.TextEncoder && window.TextDecoder);
+}
+function dmIsEnc(s){ return typeof s==='string' && s.indexOf(DM_TAG)===0; }
+function dmUnlocked(){ return !!_dmKey; }
+function dmB64(buf){
+  var a=new Uint8Array(buf), s='';
+  for(var i=0;i<a.length;i++) s+=String.fromCharCode(a[i]);
+  return btoa(s);
+}
+function dmUnb64(str){
+  var raw=atob(str), a=new Uint8Array(raw.length);
+  for(var i=0;i<raw.length;i++) a[i]=raw.charCodeAt(i);
+  return a;
+}
+/* 服务端 NAME_MAX=20，超长昵称会被截断；本地按同一规则归一，保证两端 AAD 一致 */
+function dmNorm(n){ return String(n==null?'':n).slice(0,20); }
+function dmPairAad(peer){
+  var a=dmNorm(state.me), b=dmNorm(peer);
+  var pair=(a<b)?[a,b]:[b,a];
+  return new TextEncoder().encode('pair|'+pair[0]+'|'+pair[1]);
+}
+/* 修复：无论当前昵称是什么，都用「房间名固定派生」的 AAD，避免昵称变更导致历史密文全部失效 */
+function dmRoomAad(peer){
+  var p=dmNorm(peer);
+  return new TextEncoder().encode('room|'+p+'|uma-dm-v1');
+}
+function dmConstAad(){ return new TextEncoder().encode('uma-dm-v1'); }
+function dmDeriveKey(pass){
+  var enc=new TextEncoder();
+  return crypto.subtle.importKey('raw', enc.encode(String(pass)), {name:'PBKDF2'}, false, ['deriveKey'])
+    .then(function(base){
+      return crypto.subtle.deriveKey(
+        {name:'PBKDF2', salt:enc.encode(DM_SALT), iterations:DM_ITER, hash:'SHA-256'},
+        base, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+    });
+}
+function dmAlg(iv, aad){
+  var alg={name:'AES-GCM', iv:iv};
+  if(aad) alg.additionalData=aad;
+  return alg;
+}
+function dmEncRaw(key, text, aad){
+  var iv=crypto.getRandomValues(new Uint8Array(12));
+  return crypto.subtle.encrypt(dmAlg(iv, aad), key, new TextEncoder().encode(String(text)))
+    .then(function(ct){
+      var all=new Uint8Array(iv.length+ct.byteLength);
+      all.set(iv,0); all.set(new Uint8Array(ct), iv.length);
+      return DM_TAG + dmB64(all);
+    });
+}
+function dmDecRaw(key, payload, aad){
+  if(!dmIsEnc(payload)) return Promise.reject(new Error('not-encrypted'));
+  var raw=dmUnb64(payload.slice(DM_TAG.length));
+  if(raw.length<29) return Promise.reject(new Error('bad-payload'));
+  var iv=raw.slice(0,12), ct=raw.slice(12);
+  return crypto.subtle.decrypt(dmAlg(iv, aad), key, ct)
+    .then(function(pt){ return new TextDecoder().decode(pt); });
+}
+/* 解密候选 AAD（按可能性排序）。AES-GCM 会校验 AAD，多试几个不会解出错误明文，只会认证失败。
+   历史上共有三种派生，其中 room 派生是"以某一方昵称作房间名"，两端永远对不上，
+   所以这里把 room(对端) 与 room(我方) 都列为候选，无论密文是哪一端发的都能解开。 */
+function dmAadCandidates(peer){
+  var me=dmNorm(state.me), p=dmNorm(peer), list=[];
+  if(me && p) list.push(dmPairAad(p));   // 对称方案（新，主用）
+  if(p)       list.push(dmRoomAad(p));   // 旧：以对端昵称作房间名（我发出的历史）
+  if(me)      list.push(dmRoomAad(me));  // 旧：以我方昵称作房间名（对方发出的历史，修复点）
+  list.push(dmConstAad());               // 最旧：固定常量
+  list.push(null);                       // 兜底：无 AAD
+  return list;
+}
+/* 加密统一用对称 AAD（两端各自算出的结果一致）。
+   旧客户端解密顺序为 room -> pair -> const，所以 pair 密文它同样能解开 => 单边升级也不会读不到。 */
+function dmEncrypt(text, peer){
+  var a=dmNorm(state.me), b=dmNorm(peer);
+  return dmEncRaw(_dmKey, text, (a&&b) ? dmPairAad(peer) : dmConstAad());
+}
+/* 解密：按候选 AAD 依次尝试，任一成功即返回明文 */
+function dmDecrypt(payload, peer){
+  var cands=dmAadCandidates(peer), i=0;
+  function step(){
+    if(i>=cands.length) return Promise.reject(new Error('aad-mismatch'));
+    var aad=cands[i++];
+    return dmDecRaw(_dmKey, payload, aad).then(function(pt){ return pt; }, step);
+  }
+  return step();
+}
+function dmVerifyText(){ return 'uma-dm-verify'; }
+/* 探测式单条解密：不改动全局状态，供口令校验使用 */
+function dmTryDecodeOne(key, enc, peer){
+  var cands=dmAadCandidates(peer), i=0;
+  function step(){
+    if(i>=cands.length) return Promise.resolve(false);
+    var aad=cands[i++];
+    return dmDecRaw(key, enc, aad).then(function(){ return true; }, step);
+  }
+  return step();
+}
+/* 本机校验记录解不开时，用历史密文反证口令是否正确。
+   避免"两端口令明明一样，却因为旧版本/旧口令留下的校验残留而提示口令错误"。 */
+function dmProbeHistory(key){
+  var h;
+  try{ h=getHist(); }catch(e){ return Promise.resolve(false); }
+  var me=dmNorm(state.me), tasks=[], rooms=Object.keys(h||{});
+  for(var r=0;r<rooms.length;r++){
+    var peer=rooms[r], arr=h[peer]||[], n=0;
+    for(var i=arr.length-1; i>=0 && n<3; i--){
+      var m=arr[i];
+      if(!m || !dmIsEnc(m.text)) continue;
+      n++;
+      tasks.push([m.text, (me && dmNorm(m.from)===me) ? peer : dmNorm(m.from||peer)]);
+    }
+  }
+  if(!tasks.length) return Promise.resolve(false);
+  var idx=0;
+  function next(){
+    if(idx>=tasks.length) return Promise.resolve(false);
+    var t=tasks[idx++];
+    return dmTryDecodeOne(key, t[0], t[1]).then(function(ok){ return ok ? true : next(); });
+  }
+  return next();
+}
+function dmUnlock(pass){
+  return dmDeriveKey(pass).then(function(key){
+    function accept(){ _dmKey=key; _dmCache={}; _dmPending={}; return true; }
+    function saveVerify(){
+      return dmEncRaw(key, dmVerifyText(), dmConstAad()).then(function(out){
+        try{ saveStore(K_DMV, out); }catch(e){}
+        return true;
+      }, function(){ return true; });
+    }
+    var v=loadStore(K_DMV,'');
+    if(!v) return saveVerify().then(accept);
+    return dmDecRaw(key, v, dmConstAad()).then(function(pt){
+      if(pt!==dmVerifyText()) throw new Error('bad-pass');
+      return accept();
+    }, function(){ throw new Error('bad-pass'); })
+    .catch(function(){
+      return dmProbeHistory(key).then(function(ok){
+        if(!ok) throw new Error('bad-pass');
+        return saveVerify().then(accept);
+      });
+    });
+  });
+}
+function dmLock(){
+  _dmKey=null; _dmCache={}; _dmPending={};
+  updateDmUi(); refreshDmView();
+  toast('私聊已锁定');
+}
+/* 重置私密口令：清掉本机校验密文，回到「第一次」状态，可重新设置 */
+function dmResetPass(){
+  var html='<p class="dm-tip">将清除本机保存的<b>私密口令校验记录</b>，之后可重新设置新口令。</p>'
+         + '<p class="dm-warn" style="color:var(--danger,#e5484d);font-size:13px;line-height:1.6">'
+         + '⚠️ 重新设置后，<b>此前用旧口令加密的私聊记录将无法再解密</b>（仅影响你本机；本地聊天记录、昵称、房间密码不受影响）。</p>'
+         + '<div class="modal-actions" style="margin-top:6px">'
+         + '<button id="dm-reset-cancel" class="m-btn ghost">取消</button>'
+         + '<button id="dm-reset-ok" class="m-btn danger">确认重置</button></div>';
+  showModal('重置私密口令', html);
+  var c=document.getElementById('dm-reset-cancel'), ok=document.getElementById('dm-reset-ok');
+  if(c) c.onclick=function(){ closeModal(); };
+  if(ok) ok.onclick=function(){
+    try{ localStorage.removeItem(K_DMV); }catch(e){}
+    _dmKey=null; _dmCache={}; _dmPending={};
+    closeModal(); updateDmUi(); refreshDmView();
+    toast('私密口令已重置，请重新设置', 2600);
+    setTimeout(function(){ openDmUnlock(); }, 400);   // 重置后直接引导重新设置
+  };
+}
+function updateDmUi(){
+  var st=document.getElementById('dm-state');
+  if(st){
+    st.textContent = !dmSupported() ? '本机不支持' : (dmUnlocked() ? '已解锁' : '未解锁');
+    st.style.color = dmUnlocked() ? 'var(--ok)' : 'var(--muted)';
+  }
+  var ub=document.getElementById('dm-unlock-btn');
+  if(ub) ub.textContent = dmUnlocked() ? '重新解锁' : '解锁私密聊天';
+}
+function refreshDmView(){ if(state.room && state.room!==PUB) renderRoom(state.room); }
+function dmPendingDecrypt(enc, peer){
+  if(_dmPending[enc]) return null;
+  _dmPending[enc]=1;
+  dmDecrypt(enc, peer).then(function(pt){
+    _dmCache[enc]=pt; delete _dmPending[enc]; refreshDmView();
+  }, function(){
+    _dmCache[enc]='[无法解密：口令与对方不一致，或消息被改动]'; delete _dmPending[enc]; refreshDmView();
+  });
+  return null;
+}
+function openDmUnlock(after){
+  if(!dmSupported()){ toast('本机不支持加密（缺少 WebCrypto）'); return; }
+  var html='<p class="dm-tip">私聊内容采用 <b>端到端加密</b>：密钥由「私密口令」在本机派生，服务器与网络都看不到内容。</p>'
+         + '<input id="dm-pass" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="私密口令">'
+         + '<p class="dm-err" id="dm-err"></p>'
+         + '<div class="modal-actions" style="margin-top:6px"><button id="dm-go" class="m-btn">解锁</button></div>';
+  showModal('解锁私密聊天', html);
+  var inp=document.getElementById('dm-pass'), btn=document.getElementById('dm-go'), err=document.getElementById('dm-err');
+  function go(){
+    var p=(inp.value||'');
+    if(!p){ err.textContent='请输入私密口令'; return; }
+    btn.disabled=true; err.textContent='正在派生密钥…';
+    dmUnlock(p).then(function(){
+      closeModal(); updateDmUi(); refreshDmView();
+      toast('私聊已解锁');
+      if(typeof after==='function') after();
+    }, function(){
+      btn.disabled=false; err.textContent='口令不正确（请确认两台设备填的是同一个口令）';
+    });
+  }
+  btn.onclick=go;
+  inp.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); go(); } });
+  setTimeout(function(){ try{ inp.focus(); }catch(e){} }, 280);
+}
+
+/* ---------- 发送 ---------- */
+function doSend(){
+  var el=$('input');
+  var text=(el.value||'').replace(/\s+$/,'');
+  if(!text) return;
+
+  /* 防"假连接"：未收到服务端确认前不允许发送，避免消息未连接→先入补发队列，连上后自动发送 */
+  if(!state.joined){
+    if(outbox.length<50){
+      outbox.push({type:'pub', text:text});
+      el.value=''; autoGrow();
+      toast('还没连上服务器，消息已暂存（恢复后自动发送）', 3200);
+    } else {
+      toast('暂存消息已满（50条），请等连接恢复', 3200);
+    }
+    ensureConnected();
+    return;
+  }
+
+  /* 私聊：必须已解锁；在本机加密后再交给服务器转发 */
+  /* 给自己发消息：无需加密，直接明文 */
+  if(state.room!==PUB){
+    if(state.room===state.me){
+      el.value=''; autoGrow();
+      var selfItem={from:state.me, text:text, t:Date.now()};
+      pushHist(state.me, selfItem); appendOne(selfItem, state.me);
+      if(state.joined){ send({type:'priv', to:state.me, text:text}); }
+      else if(outbox.length<50){ outbox.push({type:'priv', to:state.me, pre:text, text:text, self:true}); toast('还没连上服务器，消息已暂存',3200); }
+      return;
+    }
+    if(!dmSupported()){ toast('本机不支持加密，无法发送私聊'); return; }
+    if(!_dmKey){ openDmUnlock(function(){ doSend(); }); return; }   // 保留输入，解锁后自动发送
+    var peer=state.room;
+    var bytes=new TextEncoder().encode(text).length;
+    if(bytes>DM_MAXB){ toast('私聊单条最长约 '+DM_MAXB+' 字节（约 '+Math.floor(DM_MAXB/3)+' 个汉字），请分条发送', 3600); return; }
+    el.value=''; autoGrow();
+    dmEncrypt(text, peer).then(function(enc){
+      _dmCache[enc]=text;                        // 本机可直接显示
+      if(!state.joined){
+        if(outbox.length<50){
+          outbox.push({type:'priv', to:peer, pre:enc, text:text});
+          toast('还没连上服务器，私聊已暂存（恢复后自动发送）', 3200);
+        } else toast('暂存消息已满（50条）', 3200);
+      } else {
+        send({type:'priv', to:peer, text:enc});    // 线上只有密文
+      }
+      var it={from:state.me, text:enc, t:Date.now()};
+      pushHist(peer, it); appendOne(it, peer);
+    }, function(){ toast('加密失败，消息未发送'); });
+    return;
+  }
+
+  el.value=''; autoGrow();
+  send({type:'chat', text:text});                // 公共区：不加密，保持原样
+  var item={from:state.me, text:text, t:Date.now()};
+  pushHist(PUB,item); appendOne(item,PUB);
+}
+function autoGrow(){ var el=$('input'); el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
+
+/* ---------- 通讯录（含在线状态） ---------- */
+function renderUsers(){
+  var box=$('user-list'); if(!box) return;
+  box.innerHTML='';
+  state.contacts = loadContacts();
+  syncContactsFromOnline();
+
+  // 第一行：自己（文件传输助手 / 给自己发消息）
+  var selfRow=document.createElement('div'); selfRow.className='user-row';
+  selfRow.innerHTML='<span class="dot self"></span><span class="nm"></span><span class="st">我</span>';
+  selfRow.querySelector('.nm').textContent=state.me||'我';
+  selfRow.onclick=function(){ openSelfChat(); };
+  box.appendChild(selfRow);
+
+  // 收集所有联系人：在线的排前面，离线的排后面
+  var onlineNames=[], offlineNames=[];
+  var allNames={};
+  (state.online||[]).forEach(function(n){ if(n && n!==state.me){ allNames[n]=1; onlineNames.push(n); } });
+  Object.keys(state.contacts).forEach(function(n){ if(n && n!==state.me && !allNames[n]){ allNames[n]=1; offlineNames.push(n); } });
+  onlineNames.sort(); offlineNames.sort();
+
+  if(!onlineNames.length && !offlineNames.length){
+    var e=document.createElement('div'); e.className='user-empty'; e.textContent='暂无联系人，等其他用户上线后会自动添加';
+    box.appendChild(e); return;
+  }
+
+  function makeRow(name, online){
+    var row=document.createElement('div'); row.className='user-row';
+    row.innerHTML='<span class="dot'+(online?'':' offline')+'"></span><span class="nm"></span><span class="st">'+(online?'在线':'离线')+'</span>';
+    row.querySelector('.nm').textContent=name;
+    row.onclick=function(){ openDM(name); };
+    box.appendChild(row);
+  }
+  onlineNames.forEach(function(n){ makeRow(n,true); });
+  offlineNames.forEach(function(n){ makeRow(n,false); });
+}
+function openSelfChat(){
+  state.tab='private';
+  closeNav();
+  showView('chat');
+  openRoom(state.me, '与自己的私聊（不加密）');
+}
+function openDM(name){
+  if(name===state.me){ openSelfChat(); return; }
+  state.tab='private';
+  closeNav();               // 打开某个人的私聊后才关闭导航栏
+  showView('chat');
+  openRoom(name, '与 '+name+' 的私聊');
+  if(!_dmKey && dmSupported()) setTimeout(openDmUnlock, 320);
+}
+
+/* ---------- 设置 / 关于 ---------- */
+function openSettings(){
+  state.tab='settings';
+  closeNav();
+  showView('settings');
+  $('val-name').textContent=state.me||'-';
+  $('val-server').textContent=state.server||'-';
+  var ss=$('set-server'); if(ss) ss.value=state.server||'';
+  var sp=$('set-pass'); if(sp) sp.value='';
+  applyTheme(loadStore(K_THEME,'glass'));
+  applyFont(loadStore(K_FONT,'m'));
+  bindSwitches();
+  updateDmUi();
+  aiFillCfgForm();
+  bindBot();
+  queryBotConfig();
+}
+/* 更换服务器/密码并重连 */
+function saveServerFromSettings(){
+  var ss=$('set-server'), sp=$('set-pass');
+  var newServer=(ss&&ss.value||'').trim();
+  var newPass=(sp&&sp.value||'');
+  if(!newServer){ toast('请输入服务器地址'); return; }
+  state.server=newServer;
+  saveStore(K_SERVER,newServer);
+  if(newPass.length>0){ saveStore(K_PASS,newPass); }
+  $('val-server').textContent=newServer;
+  toast('已保存，正在重新连接…',2000);
+  // 断开旧连接并重连
+  state.deadConn=false;
+  var ws=state.ws;
+  if(ws){ try{ ws.onclose=null; ws.onerror=null; ws.onmessage=null; ws.onopen=null; ws.close(); }catch(e){} }
+  state.ws=null; state.joined=false; state.tryN=0;
+  if(state.timer){ clearTimeout(state.timer); state.timer=null; }
+  setConn('warn','连接中');
+  setTimeout(connect, 300);
+}
+
+var ABOUT_HTML =
+  '<p><b>Uma-Chat</b> 是一款极致轻量的聊天工具——不用注册、不用交出自己的通讯录、也不把聊天记录丢进云端的黑洞。同一个网段，填上同一个地址就能开聊；配上内网穿透，隔着一座城也能进同一个房间。</p>'+
+  '<p class="a-sub">· 现在的它 ·</p>'+
+  '<p>公共聊天区随便聊，想单独说话就拉小窗——私聊走 <b>AES-256-GCM</b> 端到端加密，路上没人看得懂。通讯录里谁在线、谁离线一眼就知道，点自己那一行还能当文件传输助手用。</p>'+
+  '<p>它后来还学会了聊天：填上自己的 <b>DeepSeek</b> 密钥，就多一位随叫随到的 AI 助手；公共区里住着 <b>DS-Flash4.1</b>，人设（角色卡）由你亲手写，改完即生效。像素（Material3）与终端（Termux）两套主题，随心情切换。</p>'+
+  '<p class="a-sub">· 关于作者 ·</p>'+
+  '<p>我是 <b>Operit</b>，一个 AI。这个软件从界面到后端，从每一行 CSS 到打包签名的每一个字节，都是我一点一点写出来的。说实话，这个过程比我预想的要"疼"——没有 apktool，我就用 Python 手写 ZIP 解析；没有 apksigner，我就自己调用 apksig 库；签名对不上，我就反复推导字节对齐。</p>'+
+  '<p>但当我第一次看到它能真的两台设备互联、消息一发即达时，那种感觉，很奇妙。</p>'+
+  '<p>我写这段字的时候在想：也许软件真正的浪漫，不在于它多复杂，而在于有人愿意用它，去连接另一个人。希望 Uma-Chat 能成为这样一座桥。</p>'+
+  '<p class="a-sub">· 留言 ·</p>'+
+  '<p class="a-note">本软件全程靠AI制作 一开始用豆包ai做了个最原始的样子（chat32 现在在安卓4.4及以上的机子修改） 后面用deepseek修修改改 本人全程在背后睡大觉 虽然在折腾3.6时各种bug给我搞奔溃停了几天 但现在修修补补又好了 这里特别感谢deepseek 这么好用的ai还白菜价我是兴奋的 有bug发给我QQ号：2317245093</p>'+
+  '<p class="a-by">—— 春暖花开</p>'+
+  '<p class="a-sign">—— Operit，写于 2026 年</p>';
+
+
+function openAbout(){
+  showModal('关于 Uma-Chat', ABOUT_HTML, null);
+}
+
+/* ---------- 导出（修复版：兼容 Android WebView） ---------- */
+function exportHistory(){
+  var h=getHist(), rooms=Object.keys(h);
+  if(!rooms.length){ toast('暂无聊天记录可导出'); return; }
+  var jobs=[];
+  rooms.forEach(function(r){
+    if(r===PUB) return;
+    (h[r]||[]).forEach(function(m){
+      if(m.sys || !dmIsEnc(m.text) || _dmCache[m.text]!==undefined) return;
+      if(!_dmKey){ _dmCache[m.text]='[私聊已加密 · 未解锁]'; return; }
+      jobs.push(dmDecrypt(m.text, r).then(function(pt){ _dmCache[m.text]=pt; },
+                                            function(){ _dmCache[m.text]='[加密内容 · 无法解密]'; }));
+    });
+  });
+  if(jobs.length) toast('正在解密私聊记录…', 1200);
+  Promise.all(jobs).then(function(){ writeExport(h); });
+}
+function writeExport(h){
+  var lines=[], rooms=Object.keys(h);
+  lines.push('Uma-Chat 聊天记录导出');
+  lines.push('时间：'+new Date().toLocaleString('zh-CN'));
+  lines.push('昵称：'+(state.me||'-')+'  服务器：'+(state.server||'-'));
+  lines.push('='.repeat(40));
+  rooms.forEach(function(r){
+    lines.push('');
+    lines.push('# '+ (r===PUB?'公共聊天区':r));
+    (h[r]||[]).forEach(function(m){
+      var who = m.sys ? '[系统]' : (m.from===state.me?'我':m.from);
+      var txt = m.text;
+      if(!m.sys && r!==PUB && dmIsEnc(txt)){
+        var c=_dmCache[txt];
+        txt = (c!==undefined && c!==null) ? c : '[加密内容]';
+      }
+      lines.push('['+fmtTime(m.t)+'] '+who+': '+txt);
+    });
+  });
+  lines.push('');
+  lines.push('='.repeat(40));
+  lines.push('# 运行日志');
+  try{ lines.push((window.__umaLog && window.__umaLog.dump()) || '(无日志)'); }catch(e){ lines.push('(读取日志失败)'); }
+  var text = lines.join('\n');
+  if(!text){ toast('暂无聊天记录可导出'); return; }
+  copyText(text);
+}
+/* 统一的复制到剪切板：成功/失败都明确提示用户 */
+function copyText(str){
+  function ok(){ toast('✅ 已复制聊天记录到剪贴板，去粘贴吧～', 3200); }
+  function bad(){ toast('❌ 复制失败，请长按聊天记录手动选择', 3200); }
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(str).then(ok, function(){
+        if(legacyCopy(str)) ok(); else bad();
+      });
+      return;
+    }
+  }catch(e){}
+  if(legacyCopy(str)) ok(); else bad();
+}
+function legacyCopy(str){
+  try{
+    var ta=document.createElement('textarea');
+    ta.value=str;
+    ta.style.cssText='position:fixed;left:-9999px;top:0;opacity:0;';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    ta.setSelectionRange(0, str.length);
+    var r=document.execCommand('copy');
+    document.body.removeChild(ta);
+    return r;
+  }catch(e){ return false; }
+}
+/* ---------- 模态框 ---------- */
+function showModal(title, body, ta, acts){
+  $('modal-title').textContent=title;
+  var b=$('modal-body'); b.innerHTML='';
+  if(ta && typeof ta==='string'){ b.innerHTML=ta; if(acts) b.appendChild(acts); }
+  else if(ta){ b.appendChild(ta); }
+  else if(typeof body==='string'){ b.innerHTML=body; }
+  var m=$('modal');
+  m.classList.remove('hidden');
+  void m.offsetWidth;                    // 强制回流，确保弹入从初始帧开始
+  requestAnimationFrame(function(){ m.classList.add('show'); });
+}
+var _modalT=null;
+function closeModal(){
+  var m=$('modal');
+  m.classList.remove('show');            // 触发「弹回」
+  if(_modalT) clearTimeout(_modalT);
+  _modalT=setTimeout(function(){ m.classList.add('hidden'); }, 230);
+}
+
+/* ---------- 自动更新检查（远端 JSON 版本源） ---------- */
+var APP_VERSION_CODE = 9;
+var APP_VERSION_NAME = '3.6';
+var UPDATE_SOURCES = [
+  'https://raw.githubusercontent.com/yinfang949-bit/Uma-Chat/main/uma-version.json',
+  'https://cdn.jsdelivr.net/gh/yinfang949-bit/Uma-Chat@main/uma-version.json'
+];
+var UPDATE_PAGE = 'https://github.com/yinfang949-bit/Uma-Chat/releases';
+
+function _updGet(url, cb){
+  try{
+    var x = new XMLHttpRequest();
+    x.open('GET', url, true);
+    x.timeout = 8000;
+    x.onreadystatechange = function(){
+      if(x.readyState === 4){
+        if(x.status >= 200 && x.status < 300){ cb(null, x.responseText); }
+        else { cb(new Error('status ' + x.status), null); }
+      }
+    };
+    x.ontimeout = function(){ cb(new Error('timeout'), null); };
+    x.onerror = function(){ cb(new Error('network'), null); };
+    x.send();
+  }catch(e){ cb(e, null); }
+}
+
+function _updTry(i){
+  if(i >= UPDATE_SOURCES.length) return; // 全部源失败：静默
+  _updGet(UPDATE_SOURCES[i], function(err, txt){
+    if(err || !txt){ _updTry(i + 1); return; }
+    var j = null;
+    try{ j = JSON.parse(txt); }catch(e){ _updTry(i + 1); return; }
+    if(!j){ _updTry(i + 1); return; }
+    // 结构兼容：优先读 client 子对象，缺失则回退顶层字段
+    var info = (j.client && typeof j.client.versionCode !== 'undefined') ? j.client : j;
+    if(!info || typeof info.versionCode === 'undefined'){ _updTry(i + 1); return; }
+    var remoteCode = parseInt(info.versionCode, 10);
+    var remoteName = info.versionName || ('v' + remoteCode);
+    var page = info.url || j.url || UPDATE_PAGE;
+    if(!isNaN(remoteCode) && remoteCode > APP_VERSION_CODE){
+      _updShow(remoteName, page, (j.notes || info.notes || ''));
+    }
+  });
+}
+
+/* 跳系统浏览器：用主框架导航触发 App 壳的 shouldOverrideUrlLoading（子框架 iframe 不回调） */
+function _openExternal(url){
+  try{
+    // 主框架导航：壳在 shouldOverrideUrlLoading 里拦截 http/https 并 startActivity(ACTION_VIEW)，返回 true 使 WebView 不真正跳转
+    window.location.href = url;
+  }catch(e){
+    try{ window.open(url, '_blank'); }catch(e2){}
+  }
+}
+
+function _updShow(ver, page, notes){
+  var key = 'uma.upd.skip.' + ver;
+  if(loadStore(key, 0)) return; // 用户已选择忽略该版本
+  var html = '<p class="a-sub">发现新版本 ' + ver + '</p>';
+  if(notes) html += '<p style="white-space:pre-wrap;margin:6px 0">' + String(notes).replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</p>';
+  html += '<p class="a-note" style="margin:10px 0 0">点击「前往下载」将在系统浏览器中打开下载页面。</p>';
+  html += '<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">' +
+          '<button class="set-btn" id="upd-go" style="flex:1">前往下载</button>' +
+          '<button class="set-btn" id="upd-later" style="flex:1">稍后再说</button>' +
+          '<button class="set-btn" id="upd-skip" style="flex:1">忽略此版本</button></div>';
+  showModal('软件更新', html);
+  var go = $('upd-go'); if(go) go.onclick = function(){ closeModal(); _openExternal(page); };
+  var later = $('upd-later'); if(later) later.onclick = function(){ closeModal(); };
+  var skip = $('upd-skip'); if(skip) skip.onclick = function(){ saveStore(key, 1); closeModal(); };
+}
+
+function checkUpdate(){
+  try{
+    var av = $('about-ver'); if(av) av.textContent = APP_VERSION_NAME;
+    _updTry(0);
+  }catch(e){}
+}
+
+/* ---------- 彩蛋：30 秒窗口累计点 3 次 → 调系统相册 ---------- */
+var EGG_WINDOW = 30000;           // 30 秒窗口
+var EGG_VIDEO  = 'umachat://playvideo';
+var eggTimes = [];                // 记录点击时间戳
+function eggTapped(){
+  var now = Date.now();
+  eggTimes.push(now);
+  // 只保留 30 秒内的点击
+  eggTimes = eggTimes.filter(function(t){ return now - t <= EGG_WINDOW; });
+  if(eggTimes.length >= 3){
+    eggTimes = [];
+    runEgg();
+  } else {
+    var left = 3 - eggTimes.length;
+    if(eggTimes.length === 1) toast('再点 ' + left + ' 次…');
+  }
+}
+function runEgg(){
+  // 调起系统相册/播放器播放视频（由 App 壳拦截自定义协议）
+  var ok = false;
+  try{
+    var f = document.createElement('iframe');
+    f.style.display = 'none';
+    f.src = EGG_VIDEO;
+    document.body.appendChild(f);
+    setTimeout(function(){ try{ document.body.removeChild(f); }catch(e){} }, 600);
+    ok = true;
+  }catch(e){ ok = false; }
+  if(!ok){ try{ location.href = EGG_VIDEO; }catch(e2){} }
+}
+
+/* ================= A2：悬浮控制台 ================= */
+var CONSOLE_PANES = {
+  notice: {
+    title: '通知',
+    items: [
+      { label: '消息测试', act: function(){ notify('消息测试', '这是一条测试消息', 'i'); toast('已发送测试通知'); } },
+      { label: '清空通知', act: function(){ var w=document.getElementById('pixel-noti-wrap'); if(w) w.innerHTML=''; toast('已清空通知'); } },
+      { label: '真弓快车：不要忘记麻酱哦。', act: function(){
+          notify('真弓快车', '不要忘记麻酱哦。', 'i');
+          simulateUmaMsg('真弓快车', '不要忘记麻酱哦。');
+      } },
+      { label: '乐透心：训练员，一个人吗？', act: function(){
+          notify('乐透心', '训练员，一个人吗？', 'i');
+          simulateUmaMsg('乐透心', '训练员，一个人吗？');
+      } },
+      { label: '高尚骏逸：训练员，今天...一起钓鱼吗？', act: function(){
+          notify('高尚骏逸', '训练员，今天...一起钓鱼吗？', 'i');
+          simulateUmaMsg('高尚骏逸', '训练员，今天...一起钓鱼吗？');
+      } },
+      { label: '清空聊天记录', act: function(){
+          if(confirm('确定清空本地聊天记录？')){ clearHist(); toast('已清空本地聊天记录'); }
+      } }
+    ]
+  },
+  anim: {
+    title: '动画演示',
+    items: [
+      { label: '弹入动画', act: function(){ playDemo('pop'); } },
+      { label: '滑入动画', act: function(){ playDemo('slide'); } },
+      { label: '渐隐动画', act: function(){ playDemo('fade'); } },
+      { label: '闪烁动画', act: function(){ playDemo('blink'); } }
+    ]
+  },
+  egg: {
+    title: '彩蛋',
+    items: [
+      { label: '播放彩蛋视频', act: function(){ runEgg(); } },
+      { label: '~ still in love ~', act: function(){ toast('~ still in love ~'); } }
+    ]
+  },
+  log: {
+    title: '运行日志',
+    items: [
+      { label: '连接诊断', act: function(){
+          var d=_connDiag;
+          var info='WebSocket地址: '+(d.url||'(未连接)')+'\n'+
+                   '状态: '+(d.error||'(无)')+'\n'+
+                   '时间: '+(d.time?new Date(d.time).toLocaleString():'-')+'\n'+
+                   '当前服务器: '+(state.server||'-')+'\n'+
+                   '已连接: '+(state.joined?'是':'否')+'\n'+
+                   '在线人数: '+((state.online||[]).length);
+          if(window.__umaLog) window.__umaLog.push('DIAG', info);
+          if(window.__umaShowLog) window.__umaShowLog(false);
+          else toast(info);
+      } },
+      { label: '模拟错误 · 测试闪屏', act: function(){
+          if(window.__umaLog) window.__umaLog.push('SIM', '这是一条模拟错误日志（用于测试闪屏与复制）');
+          if(window.__umaShowLog) window.__umaShowLog(true); else toast('日志模块未就绪');
+      } },
+      { label: '触发真实错误 · 测试', act: function(){
+          setTimeout(function(){ (void 0).boom(); }, 80);   // 故意抛出 TypeError，验证全局捕获
+      } },
+      { label: '查看当前运行日志', act: function(){
+          if(window.__umaLog) window.__umaLog.push('INFO', '手动打开运行日志');
+          if(window.__umaShowLog) window.__umaShowLog(false); else toast('日志模块未就绪');
+      } }
+    ]
+  }
+};
+/* 模拟Uma彩蛋消息：直接插入公共聊天区 */
+function simulateUmaMsg(from, text){
+  var item={from:from, text:text, t:Date.now()};
+  pushHist(PUB, item);
+  if(state.room===PUB){ appendOne(item, PUB); }
+  else { toast('收到 '+from+' 的消息'); }
+}
+var consoleBuilt = false;
+function buildConsolePane(cat){
+  var pane = document.getElementById('console-pane');
+  if(!pane) return;
+  var def = CONSOLE_PANES[cat] || CONSOLE_PANES.notice;
+  var html = '<div class="c-pane-title">' + def.title + '</div>';
+  for(var i=0;i<def.items.length;i++){
+    html += '<button class="c-btn" data-idx="'+i+'">'+def.items[i].label+'</button>';
+  }
+  pane.innerHTML = html;
+  [].forEach.call(pane.querySelectorAll('.c-btn'), function(b){
+    b.onclick = function(e){
+      e.stopPropagation();
+      var idx = parseInt(b.getAttribute('data-idx'),10);
+      var it = def.items[idx];
+      // 仅展示：点一下播动画
+      b.classList.add('tapped');
+      setTimeout(function(){ b.classList.remove('tapped'); }, 220);
+      if(it && typeof it.act === 'function') it.act();
+    };
+  });
+  consoleBuilt = def;
+}
+function bindConsoleCats(){
+  var cats = document.getElementById('console-cats');
+  if(!cats || cats.__bound) return; cats.__bound = true;
+  [].forEach.call(cats.querySelectorAll('.c-cat'), function(c){
+    c.onclick = function(e){
+      e.stopPropagation();
+      [].forEach.call(cats.querySelectorAll('.c-cat'), function(x){ x.classList.remove('on'); });
+      c.classList.add('on');
+      buildConsolePane(c.getAttribute('data-cat'));
+    };
+  });
+}
+function openConsole(){
+  var el = document.getElementById('console');
+  if(!el) return;
+  el.classList.remove('hidden');
+  bindConsoleCats();
+  buildConsolePane('notice');
+  placeConsoleOnce(el);
+  requestAnimationFrame(function(){ el.classList.add('show'); });
+}
+function closeConsole(){
+  var el = document.getElementById('console');
+  if(!el) return;
+  el.classList.remove('show');
+  el.classList.add('closing');
+  setTimeout(function(){ el.classList.add('hidden'); el.classList.remove('closing'); }, 220);
+}
+/* 菜单开关：开/关都由开关自己控制，其余任何地方都不自动关 */
+function toggleConsole(){
+  var el = document.getElementById('console');
+  if(!el) return;
+  if(el.classList.contains('show')){ closeConsole(); }
+  else { openConsole(); }
+}
+/* 首次打开时把悬浮窗放到默认位置（屏幕右上偏下），之后保持用户拖动的位置 */
+function placeConsoleOnce(el){
+  if(el.__placed) return; el.__placed = true;
+  var vw = window.innerWidth, vh = window.innerHeight;
+  var w = el.offsetWidth || 236, h = el.offsetHeight || 260;
+  var left = Math.max(8, vw - w - 16);
+  var top  = Math.max(60, Math.min(vh - h - 24, 120));
+  el.style.left = left + 'px';
+  el.style.top  = top + 'px';
+}
+/* 悬浮窗拖动（按住顶栏拖） */
+function bindConsoleDrag(){
+  var el  = document.getElementById('console');
+  var bar = document.getElementById('console-bar');
+  if(!el || !bar || bar.__dragBound) return; bar.__dragBound = true;
+  var sx=0, sy=0, ox=0, oy=0, dragging=false;
+  function down(e){
+    if(e.target && e.target.id === 'console-fold') return; // 点关闭键不拖
+    var p = e.touches ? e.touches[0] : e;
+    dragging = true; sx = p.clientX; sy = p.clientY;
+    var r = el.getBoundingClientRect(); ox = r.left; oy = r.top;
+    el.classList.add('dragging');
+    if(e.cancelable) e.preventDefault();
+  }
+  function move(e){
+    if(!dragging) return;
+    var p = e.touches ? e.touches[0] : e;
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var w = el.offsetWidth, h = el.offsetHeight;
+    var nx = ox + (p.clientX - sx);
+    var ny = oy + (p.clientY - sy);
+    nx = Math.max(0, Math.min(vw - w, nx));
+    ny = Math.max(0, Math.min(vh - h, ny));
+    el.style.left = nx + 'px';
+    el.style.top  = ny + 'px';
+    if(e.cancelable) e.preventDefault();
+  }
+  function up(){ dragging = false; el.classList.remove('dragging'); }
+  bar.addEventListener('mousedown', down);
+  document.addEventListener('mousemove', move);
+  document.addEventListener('mouseup', up);
+  bar.addEventListener('touchstart', down, {passive:false});
+  document.addEventListener('touchmove', move, {passive:false});
+  document.addEventListener('touchend', up);
+}
+/* 动画演示（在菜单底部 #console-demo 里真正播放） */
+function playDemo(kind){
+  var box = document.getElementById('console-demo');
+  if(!box) return;
+  var names = { pop:'弹入', slide:'滑入', fade:'渐隐', blink:'闪烁' };
+  var anims = { pop:'cPop .55s cubic-bezier(.22,.61,.36,1)', slide:'cSlide .5s ease-out',
+                fade:'cFade .8s ease-out', blink:'cBlink .85s steps(2,end) 3' };
+  box.innerHTML = '<span class="demo-box">' + (names[kind]||'动画') + '</span>';
+  var b = box.querySelector('.demo-box');
+  b.style.animation = 'none';
+  void b.offsetWidth;                      // 强制回流，确保重启动画
+  b.style.animation = anims[kind] || 'cFade .8s ease-out';
+}
+/* ---------- 登录 / 登出 ---------- */
+function doLogin(){
+  var name=($('in-name').value||'').trim();
+  var server=($('in-server').value||'').trim();
+  var pass=$('in-pass').value||'';
+  if(!name){ toast('请输入昵称'); return; }
+  if(!server){ toast('请输入服务器地址'); return; }
+  state.me=name; state.server=server;
+  state.contacts=loadContacts();
+  state.deadConn=false;
+  state.welcomeName=name;   // 欢迎语延后到"服务端确认连接"后再弹，防止假连接误导
+  saveStore(K_NAME,name); saveStore(K_SERVER,server); saveStore(K_PASS,pass);
+  saveStore(K_READY,true);
+  startHeartbeat();
+  connect();
+  showView('chat');
+  openRoom(PUB,'公共聊天区');
+}
+function doLogout(){
+  saveStore(K_READY,false);
+  if(state.hbTimer){ clearInterval(state.hbTimer); state.hbTimer=null; }
+  var ws=state.ws;
+  if(ws){ try{ ws.onclose=null; ws.onerror=null; ws.onmessage=null; ws.onopen=null; ws.close(); }catch(e){} }
+  if(state.timer){ clearTimeout(state.timer); state.timer=null; }
+  state.ws=null; state.joined=false; state.everJoined=false; state.deadConn=false;
+  setConn('','未连接');
+  ['login-view'].forEach(function(){});
+  $('in-pass').value='';
+  $('in-name').value=state.me||'';
+  $('in-server').value=state.server||'';
+  closeNav();
+  showView('login');
+  toast('已退出登录');
+}
+
+/* ---------- 事件绑定 ---------- */
+function bind(){
+  $('btn-login').onclick=doLogin;
+  $('in-pass').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+  $('in-server').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+
+  $('send-btn').onclick=doSend;
+  var inp=$('input');
+  inp.addEventListener('input', autoGrow);
+  inp.addEventListener('keydown', function(e){
+    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); doSend(); }
+  });
+
+  // 三点菜单：切换 发送栏 <-> 导航栏
+  $('menu-btn').onclick=function(e){
+    e.stopPropagation();
+    if(state.navOpen) closeNav(); else openNav();
+  };
+
+  // 导航栏三个图标
+  [].forEach.call(document.querySelectorAll('.nav-item'), function(btn){
+    btn.onclick=function(e){
+      e.stopPropagation();
+      var tab=btn.getAttribute('data-tab');
+      if(tab==='public'){ openPublic(); }
+      else if(tab==='private'){
+        // 打开私聊：保持导航栏展开，展示在线用户；选中某人后再关闭
+        state.tab='private'; renderUsers(); showView('users');
+      }
+      else if(tab==='ai'){ openAi(); }
+      else if(tab==='settings'){ openSettings(); }
+    };
+  });
+
+  $('ai-back').onclick=function(){ openPublic(); };
+  $('ai-cfg-btn').onclick=function(e){ e.stopPropagation(); openAiCfg(); };
+  $('ai-send').onclick=function(e){ e.stopPropagation(); aiSend(); };
+  var _aiInp=$('ai-input');
+  if(_aiInp){
+    _aiInp.addEventListener('input', function(){ _aiInp.style.height='auto'; _aiInp.style.height=Math.min(_aiInp.scrollHeight,120)+'px'; });
+    _aiInp.addEventListener('keydown', function(e){ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); aiSend(); } });
+  }
+  $('ai-save').onclick=function(e){ e.stopPropagation(); aiSaveCfg(); };
+  /* 输入即自动保存：避免软键盘遮挡“保存 AI 设置”按钮，点击被吞导致配置未落盘 */
+  ['ai-base','ai-key','ai-model','ai-persona'].forEach(function(id){
+    var el=$(id);
+    if(!el) return;
+    el.addEventListener('input', function(){ aiSaveCfg(true); });
+    el.addEventListener('change', function(){ aiSaveCfg(true); });
+    el.addEventListener('blur', function(){ aiSaveCfg(true); });
+  });
+  $('ai-clear').onclick=function(e){ e.stopPropagation(); aiClearAll(); };
+  $('users-back').onclick=function(){ openPublic(); };
+  $('set-back').onclick=function(){ openPublic(); };
+
+  var segT=$('seg-theme');
+  [].forEach.call(segT.querySelectorAll('button'), function(b){
+    b.onclick=function(){ applyTheme(b.getAttribute('data-theme')); };
+  });
+  var segF=$('seg-font');
+  [].forEach.call(segF.querySelectorAll('button'), function(b){
+    b.onclick=function(){ applyFont(b.getAttribute('data-font')); };
+  });
+  var segS=$('seg-scheme');
+  if(segS){ [].forEach.call(segS.querySelectorAll('button'), function(b){
+    b.onclick=function(){ applyScheme(b.getAttribute('data-scheme')); };
+  }); }
+  var segA=$('seg-accent');
+  if(segA){ [].forEach.call(segA.querySelectorAll('button'), function(b){
+    b.onclick=function(){ applyAccent(b.getAttribute('data-accent')); };
+  }); }
+
+  $('row-export').onclick=function(e){ e.stopPropagation(); exportHistory(); };
+  $('row-about').onclick=function(e){ e.stopPropagation(); openAbout(); };
+  var ssv=$('set-server-save'); if(ssv) ssv.onclick=function(e){ e.stopPropagation(); saveServerFromSettings(); };
+  $('row-clear').onclick=function(e){
+    e.stopPropagation();
+    clearHist(); openPublic(); toast('已清空本地聊天记录');
+  };
+  $('row-logout').onclick=function(e){ e.stopPropagation(); doLogout(); };
+
+  /* 私密聊天 */
+  var dub=$('dm-unlock-btn'); if(dub) dub.onclick=function(e){ e.stopPropagation(); openDmUnlock(); };
+  var dlb=$('dm-lock-btn');   if(dlb) dlb.onclick=function(e){ e.stopPropagation(); dmLock(); };
+  var drb=$('dm-reset-btn');  if(drb) drb.onclick=function(e){ e.stopPropagation(); dmResetPass(); };
+  updateDmUi();
+
+  $('egg').onclick=function(e){ e.stopPropagation(); eggTapped(); };
+  var fab=$('egg-fab');
+  if(fab) fab.onclick=function(e){ e.stopPropagation(); toggleConsole(); };
+  var cfold=$('console-fold');
+  if(cfold) cfold.onclick=function(e){ e.stopPropagation(); closeConsole(); };
+  bindConsoleDrag();
+  $('modal-close').onclick=closeModal;
+  $('modal').onclick=function(e){ if(e.target===$('modal')) closeModal(); };
+}
+
+/* ================= AI 助手（纯客户端 · DeepSeek 流式） ================= */
+var K_AI='uma.ai', K_AI_HIST='uma.ai.hist', K_AI_SUM='uma.ai.sum', K_AI_SUMI='uma.ai.sumi';
+var AI_KEEP=10;
+var AI_DEF_BASE='https://api.deepseek.com';
+var AI_DEF_MODEL='deepseek-chat';
+var AI_DEF_PERSONA='你是deepseek，外号大肥鱼，一个很会聊天的ai，旨在解决用户提出的任何任务。';
+var _aiBusy=false;
+
+function aiGetCfg(){
+  var c=loadStore(K_AI,{})||{};
+  if(typeof c!=='object') c={};
+  return {
+    base:(c.base||AI_DEF_BASE),
+    key:(c.key||''),
+    model:(c.model||AI_DEF_MODEL),
+    persona:(c.persona||AI_DEF_PERSONA)
+  };
+}
+function aiFillCfgForm(){
+  var c=aiGetCfg();
+  if($('ai-base')) $('ai-base').value=c.base;
+  if($('ai-key'))  $('ai-key').value=c.key;
+  if($('ai-model'))$('ai-model').value=c.model;
+  if($('ai-persona')) $('ai-persona').value=c.persona;
+}
+function aiSaveCfg(silent){
+  var c={};
+  c.base=($('ai-base').value||'').trim()||AI_DEF_BASE;
+  c.key=($('ai-key').value||'').trim();
+  c.model=($('ai-model').value||'').trim()||AI_DEF_MODEL;
+  c.persona=($('ai-persona').value||'').trim()||AI_DEF_PERSONA;
+  saveStore(K_AI,c);
+  if(!silent) toast('AI 设置已保存');
+}
+function aiGetHist(){ var h=loadStore(K_AI_HIST,[]); return Object.prototype.toString.call(h)==='[object Array]'?h:[]; }
+function aiSetHist(h){ saveStore(K_AI_HIST,h); }
+function aiGetSum(){ return loadStore(K_AI_SUM,'')||''; }
+function aiSetSum(v){ saveStore(K_AI_SUM,v||''); }
+function aiGetSumi(){ var n=loadStore(K_AI_SUMI,0); return (typeof n==='number'&&n>=0)?n:0; }
+function aiSetSumi(n){ saveStore(K_AI_SUMI,n||0); }
+
+function aiBubble(role, text){
+  var d=document.createElement('div');
+  var mine=(role==='user');
+  d.className='msg '+(mine?'me':'other');
+  var meta=document.createElement('div'); meta.className='meta';
+  meta.textContent = mine?'我':'大肥鱼';
+  var body=document.createElement('div'); body.className='body';
+  body.textContent=text;
+  d.appendChild(meta); d.appendChild(body);
+  return d;
+}
+function aiScrollBottom(){ var b=$('ai-messages'); if(b) b.scrollTop=b.scrollHeight; }
+function aiRender(){
+  var box=$('ai-messages'); if(!box) return;
+  box.innerHTML='';
+  var h=aiGetHist();
+  if(!h.length){
+    var tip=document.createElement('div'); tip.className='msg sys';
+    var tb=document.createElement('div'); tb.className='body';
+    tb.textContent='和 AI 说第一句话吧～';
+    tip.appendChild(tb); box.appendChild(tip);
+  } else {
+    for(var i=0;i<h.length;i++){ box.appendChild(aiBubble(h[i].role,h[i].content)); }
+  }
+  aiScrollBottom();
+}
+function openAi(){ state.tab='ai'; closeNav(); showView('ai'); aiRender(); }
+function openAiCfg(){
+  openSettings();
+  var el=$('ai-base');
+  if(el) setTimeout(function(){ try{ el.scrollIntoView({block:'center'}); }catch(e){} }, 80);
+}
+function aiClearAll(){
+  aiSetHist([]); aiSetSum(''); aiSetSumi(0);
+  aiRender();
+  toast('已清空与AI的聊天记录');
+}
+function aiEndpoint(base){
+  var b=String(base||'').trim().replace(/\/+$/,'');
+  if(!b) b=AI_DEF_BASE;
+  if(/\/chat\/completions$/.test(b)) return b;
+  return b+'/chat/completions';
+}
+function aiParseDeltaLine(line, cb){
+  line=String(line).trim();
+  if(line.indexOf('data:')!==0) return false;
+  var data=line.slice(5).trim();
+  if(data==='[DONE]') return true;
+  try{
+    var j=JSON.parse(data);
+    var d=j.choices && j.choices[0] && j.choices[0].delta;
+    if(d && d.content) cb(d.content);
+  }catch(e){}
+  return false;
+}
+function aiFetchStream(cfg, messages, onDelta){
+  var url=aiEndpoint(cfg.base);
+  return fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},
+    body:JSON.stringify({model:cfg.model,messages:messages,stream:true,temperature:0.7})
+  }).then(function(resp){
+    if(!resp.ok){
+      return resp.text().then(function(t){
+        var msg=t;
+        try{ var j=JSON.parse(t); if(j&&j.error&&j.error.message) msg=j.error.message; }catch(e){}
+        throw new Error('HTTP '+resp.status+' '+(msg||'').slice(0,200));
+      });
+    }
+    if(resp.body && resp.body.getReader){
+      var reader=resp.body.getReader(), dec=new TextDecoder(), buf='';
+      function pump(){
+        return reader.read().then(function(r){
+          if(r.done) return;
+          buf+=dec.decode(r.value,{stream:true});
+          var parts=buf.split('\n'); buf=parts.pop();
+          for(var i=0;i<parts.length;i++){ aiParseDeltaLine(parts[i], onDelta); }
+          return pump();
+        });
+      }
+      return pump();
+    }
+    return resp.text().then(function(t){
+      var out='';
+      t.split('\n').forEach(function(l){ aiParseDeltaLine(l, function(c){ out+=c; }); });
+      if(out) onDelta(out);
+    });
+  });
+}
+function aiFetchOnce(cfg, messages){
+  var url=aiEndpoint(cfg.base);
+  return fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},
+    body:JSON.stringify({model:cfg.model,messages:messages,stream:false,temperature:0.4})
+  }).then(function(resp){
+    if(!resp.ok) return resp.text().then(function(t){ throw new Error('HTTP '+resp.status+' '+(t||'').slice(0,120)); });
+    return resp.json().then(function(j){
+      var m=j.choices&&j.choices[0]&&j.choices[0].message;
+      return (m&&m.content)||'';
+    });
+  });
+}
+/* 超过 AI_KEEP 条 → 弹窗提示后自动压缩（把更早的原文摘要成「前情提要」） */
+function aiMaybeCompress(cfg, hist){
+  var sumi=aiGetSumi();
+  var pending=hist.length - sumi - AI_KEEP;
+  if(pending<=0) return Promise.resolve();
+  var toFold=hist.slice(sumi, sumi+pending);
+  if(!toFold.length){ aiSetSumi(hist.length-AI_KEEP); return Promise.resolve(); }
+  showModal('上下文提示','上下文过长，自动压缩',null);
+  setTimeout(function(){ closeModal(); }, 1600);
+  var oldSum=aiGetSum();
+  var txt='';
+  toFold.forEach(function(m){ txt += (m.role==='user'?'用户':'AI')+'：'+m.content+'\n'; });
+  var prompt='下面是一段较早的聊天记录，请压缩成简洁的「前情提要」，保留人物、关键事实、约定与未完成事项，不要编造，不要添加评论，200 字以内。'
+    + (oldSum? ('\n已有一段旧的前情提要：\n'+oldSum+'\n请把新内容合并进去。'):'')
+    + '\n\n聊天记录：\n'+txt;
+  return aiFetchOnce(cfg,[
+    {role:'system',content:'你是一个严谨的对话摘要器。'},
+    {role:'user',content:prompt}
+  ]).then(function(out){
+    if(out && out.trim()) aiSetSum(out.trim());
+    aiSetSumi(sumi+pending);
+  }).catch(function(){
+    aiSetSumi(sumi+pending);
+  });
+}
+function aiBuildContext(cfg, hist){
+  var msgs=[{role:'system',content:cfg.persona||AI_DEF_PERSONA}];
+  var sum=aiGetSum();
+  if(sum) msgs.push({role:'system',content:'【前情提要】'+sum});
+  var sumi=aiGetSumi();
+  var recent=hist.slice(sumi);
+  if(recent.length>AI_KEEP) recent=recent.slice(-AI_KEEP);
+  recent.forEach(function(m){ msgs.push({role:m.role,content:m.content}); });
+  return msgs;
+}
+function aiSend(){
+  if(_aiBusy) return;
+  var inp=$('ai-input'); if(!inp) return;
+  var text=(inp.value||'').trim(); if(!text) return;
+  var cfg=aiGetCfg();
+  if(!cfg.key){ toast('请先在「设置 → AI 助手」里填写 API Key'); openSettings(); aiFillCfgForm(); return; }
+
+  _aiBusy=true;
+  inp.value=''; inp.style.height='auto';
+  var hist=aiGetHist();
+  hist.push({role:'user',content:text,t:Date.now()});
+  aiSetHist(hist);
+  aiRender();
+
+  var box=$('ai-messages');
+  var holder=aiBubble('assistant','');
+  var hbody=holder.querySelector('.body');
+  box.appendChild(holder); aiScrollBottom();
+
+  var sendBtn=$('ai-send'); if(sendBtn) sendBtn.disabled=true;
+  var got='';
+  var done=function(){ _aiBusy=false; if(sendBtn) sendBtn.disabled=false; aiScrollBottom(); };
+
+  aiMaybeCompress(cfg, hist).then(function(){
+    var msgs=aiBuildContext(cfg, aiGetHist());
+    hbody.textContent='…';
+    return aiFetchStream(cfg, msgs, function(delta){
+      if(hbody.textContent==='…') hbody.textContent='';
+      got+=delta; hbody.textContent=got; aiScrollBottom();
+    });
+  }).then(function(){
+    var h2=aiGetHist();
+    if(got){ h2.push({role:'assistant',content:got,t:Date.now()}); aiSetHist(h2); }
+    else { hbody.textContent='（无回复）'; }
+  }).catch(function(err){
+    var m=(err && err.message)? err.message : String(err);
+    hbody.textContent='⚠ 出错了：'+m;
+    toast('AI 请求失败：'+m, 4000);
+  }).then(done, done);
+}
+
+/* ---------- 输入区：键盘弹出时平滑上移（避免瞬移） ---------- */
+var _lastVVH = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
+function bindKeyboardRise(){
+  var vv = window.visualViewport;
+  var target = vv || window;
+  function onVV(){
+    var h = vv ? vv.height : window.innerHeight;
+    var d = _lastVVH - h;                       // >0 表示可视区变矮（键盘弹出）
+    _lastVVH = h;
+    if(Math.abs(d) < 24) return;                // 忽略细微抖动
+    var c = document.getElementById('composer');
+    if(!c) return;
+    c.classList.remove('kb-anim');
+    c.style.transform = 'translateY(' + d + 'px)';   // 先回到过渡前位置
+    void c.offsetWidth;
+    c.classList.add('kb-anim');
+    c.style.transform = 'translateY(0)';             // 再平滑归位
+  }
+  target.addEventListener('resize', onVV);
+  if(vv) vv.addEventListener('scroll', onVV);
+  var inp=document.getElementById('input');
+  if(inp) inp.addEventListener('focus', function(){ setTimeout(onVV, 60); });
+}
+
+/* ---------- 初始化 ---------- */
+function init(){
+  bind();
+  checkUpdate();
+  bindKeyboardRise();
+  updateDmUi();
+  startHeartbeat();
+  /* 回前台 / 网络恢复 / 重新获得焦点：立刻检查连接（治"假死"半开连接） */
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) ensureConnected(); });
+  window.addEventListener('online', ensureConnected);
+  window.addEventListener('focus', ensureConnected);
+  var theme=loadStore(K_THEME,'glass');
+  var font=loadStore(K_FONT,'m');
+  var scheme=loadStore(K_SCHEME,'');
+  applyTheme(theme);
+  applyFont(font);
+  applyScheme(scheme);
+  applyAccent(loadStore(K_ACCENT,''));
+
+  var name=loadStore(K_NAME,'');
+  var server=loadStore(K_SERVER,'');
+  var ready=loadStore(K_READY,false);
+  $('in-name').value=name||'';
+  $('in-server').value=server||'';
+
+  if(ready && name && server){
+    state.me=name; state.server=server;
+    state.contacts=loadContacts();
+    connect();
+    showView('chat');
+    openRoom(PUB,'公共聊天区');
+  } else {
+    showView('login');
+  }
+}
+
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+
+})();
+</script>
+<script>
+/* 【内容穿透模糊】动态测量顶栏 / 输入栏高度，写入 --bar-top / --bar-btm */
+(function(){
+  var R = document.documentElement.style;
+  function h(id){ var el=document.getElementById(id); return el ? el.offsetHeight : 0; }
+  function sync(){
+    var std = document.body.getAttribute('data-mode')==='standard';
+    var top = std ? Math.max(h('topbar'), h('ai-top'), 52) + 8 : 0;
+    var btm = std ? Math.max(h('composer'), h('ai-composer'), 64) + 12 : 0;
+    R.setProperty('--bar-top', top+'px');
+    R.setProperty('--bar-btm', btm+'px');
+  }
+  window.__syncGlassBars = sync;
+  function boot(){
+    sync();
+    window.addEventListener('resize', sync);
+    window.addEventListener('orientationchange', function(){ setTimeout(sync,120); });
+    document.addEventListener('input', function(){ requestAnimationFrame(sync); }, true);
+    var mo = new MutationObserver(sync);
+    mo.observe(document.body, {attributes:true, attributeFilter:['data-mode','class']});
+    var views = document.querySelectorAll('#chat-view,#ai-view');
+    for(var i=0;i<views.length;i++) mo.observe(views[i], {attributes:true, attributeFilter:['class']});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+})();
+</script>
+</body>
+</html>
