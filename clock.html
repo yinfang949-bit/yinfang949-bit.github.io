@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Clock · 液态玻璃时钟</title>
+<style>
+:root{
+  --pri:155,127,208;
+  --bg:rgba(255,255,255,.22);
+  --bg2:rgba(255,255,255,.16);
+  --bd:rgba(255,255,255,.45);
+  --line:rgba(var(--pri),.16);
+  --inset:inset 0 1px 2px rgba(255,255,255,.45);
+  --txt:rgba(30,25,40,.9);
+  --txt2:rgba(30,25,40,.55);
+  --acc:rgb(var(--pri));
+}
+[data-theme="dark"]{
+  --pri:183,154,232;
+  --bg:rgba(24,22,28,.35);
+  --bg2:rgba(24,22,28,.30);
+  --bd:rgba(255,255,255,.12);
+  --line:rgba(var(--pri),.20);
+  --inset:inset 0 1px 2px rgba(255,255,255,.05);
+  --txt:rgba(255,255,255,.92);
+  --txt2:rgba(255,255,255,.55);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,sans-serif}
+body{
+  background:
+    radial-gradient(58% 42% at 12% 8%,rgba(var(--pri),.34),transparent 62%),
+    radial-gradient(52% 40% at 88% 12%,rgba(var(--pri),.16),transparent 62%),
+    radial-gradient(66% 52% at 80% 92%,rgba(var(--pri),.22),transparent 66%),
+    linear-gradient(160deg,#F7F4FC,#F1EFFA 52%,#FDFCFF);
+  background-size:240% 240%,240% 240%,240% 240%,100% 100%;
+  animation:drift 18s ease-in-out infinite alternate;
+  color:var(--txt);user-select:none;
+}
+[data-theme="dark"] body{
+  background:
+    radial-gradient(58% 42% at 12% 8%,rgba(var(--pri),.22),transparent 62%),
+    radial-gradient(52% 40% at 88% 12%,rgba(var(--pri),.12),transparent 62%),
+    radial-gradient(66% 52% at 80% 92%,rgba(var(--pri),.16),transparent 66%),
+    linear-gradient(135deg,#0b0a0d,#121016 55%,#0a0a0c);
+  background-size:240% 240%,240% 240%,240% 240%,100% 100%;
+}
+@keyframes drift{0%{background-position:0% 0%,100% 0%,100% 100%,0 0}50%{background-position:60% 50%,40% 60%,35% 45%,0 0}100%{background-position:100% 100%,0% 100%,0% 0%,0 0}}
+.glass{background:var(--bg);-webkit-backdrop-filter:blur(20px) saturate(150%);backdrop-filter:blur(20px) saturate(150%);border:1px solid var(--bd);box-shadow:var(--inset),0 4px 18px rgba(31,27,46,.08);border-radius:20px}
+.app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto}
+.page{flex:1;overflow-y:auto;padding:16px 16px 100px;display:none;-webkit-overflow-scrolling:touch}
+.page.active{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg);-webkit-backdrop-filter:blur(20px) saturate(150%);backdrop-filter:blur(20px) saturate(150%);border-bottom:1px solid var(--line)}
+.topbar h1{font-size:17px;font-weight:600;color:var(--txt2);letter-spacing:.3px;position:absolute;left:50%;transform:translateX(-50%)}
+.topbar .tb-left,.topbar .tb-right{display:flex;gap:4px}
+.icon-btn{width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;background:transparent;color:var(--txt2);display:flex;align-items:center;justify-content:center;transition:background .2s}
+.icon-btn:active{background:rgba(255,255,255,.2)}
+.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:100;padding:8px 16px 24px;background:var(--bg);-webkit-backdrop-filter:blur(20px) saturate(150%);backdrop-filter:blur(20px) saturate(150%);border-top:1px solid var(--line);display:flex;justify-content:space-around}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 14px;border-radius:14px;border:none;background:transparent;color:var(--txt2);cursor:pointer;font-size:11px;font-weight:500;transition:all .25s}
+.tab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab.active{color:var(--acc)}.tab.active svg{stroke:var(--acc)}
+
+/* 时钟 */
+.clock-disp{display:flex;flex-direction:column;align-items:center;padding:24px 0 8px}
+.mini-clock{width:130px;height:130px;border-radius:50%;border:1.5px solid rgba(var(--pri),.2);position:relative;margin-bottom:16px;background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.mini-clock .hand{position:absolute;bottom:50%;left:50%;transform-origin:bottom center;border-radius:4px;background:var(--txt)}
+.mini-clock .hh{width:4px;height:34px;margin-left:-2px}
+.mini-clock .mh{width:2.5px;height:50px;margin-left:-1.25px}
+.mini-clock .dot{position:absolute;top:50%;left:50%;width:8px;height:8px;border-radius:50%;background:var(--acc);transform:translate(-50%,-50%)}
+.digi{font-size:68px;font-weight:200;letter-spacing:-2px;color:var(--txt);line-height:1;font-variant-numeric:tabular-nums}
+.digi .sec{font-size:28px;color:var(--txt2);font-weight:300;vertical-align:super}
+.date{font-size:15px;color:var(--txt2);margin-top:8px}
+.cities{margin-top:24px;display:flex;flex-direction:column;gap:10px}
+.city{padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.city .n{font-size:15px;color:var(--txt2);font-weight:500}
+.city .t{font-size:28px;font-weight:300;color:var(--txt);font-variant-numeric:tabular-nums}
+.city .d{font-size:12px;color:var(--txt2);margin-top:2px}
+.add-city{padding:14px 20px;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--txt2);font-size:14px;cursor:pointer;border:1px dashed var(--bd);background:transparent}
+
+/* 计时器 */
+.timer-wrap{display:flex;flex-direction:column;align-items:center;padding:24px 0 16px}
+.mode-tabs{display:flex;gap:8px;margin-bottom:20px;padding:4px;background:var(--bg2);border-radius:14px;border:1px solid var(--bd);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.mode-tab{padding:8px 20px;border-radius:10px;border:none;background:transparent;color:var(--txt2);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s}
+.mode-tab.active{background:var(--acc);color:#fff}
+.ring{position:relative;width:220px;height:220px}
+.ring svg{transform:rotate(-90deg)}
+.ring .bg{stroke:rgba(255,255,255,.2);fill:none;stroke-width:10}
+.ring .fg{stroke:var(--acc);fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset .3s linear}
+.ring .txt{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.ring .big{font-size:40px;font-weight:200;color:var(--txt);font-variant-numeric:tabular-nums}
+.ring .sub{font-size:13px;color:var(--txt2);margin-top:4px}
+.ctrls{display:flex;gap:16px;margin-top:28px;align-items:center}
+.btn{width:64px;height:64px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.btn:active{transform:scale(.92)}
+.btn-p{background:var(--acc);color:#fff;box-shadow:0 4px 20px rgba(var(--pri),.4)}
+.btn-s{background:var(--bg2);color:var(--txt);border:1px solid var(--bd);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.btn-sm{width:48px;height:48px}
+.presets{display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap}
+.chip{padding:8px 18px;border-radius:20px;border:1px solid var(--bd);background:var(--bg2);color:var(--txt);font-size:14px;cursor:pointer;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:all .2s}
+.chip:active{background:rgba(var(--pri),.2)}
+.chip.active{background:var(--acc);color:#fff;border-color:transparent}
+.tinput{display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:8px}
+.tinput input{width:70px;text-align:center;font-size:40px;font-weight:200;background:transparent;border:none;color:var(--txt);font-variant-numeric:tabular-nums;outline:none;border-bottom:2px solid rgba(var(--pri),.3);padding-bottom:4px}
+.tinput input:focus{border-bottom-color:var(--acc)}
+.tinput .sp{font-size:36px;color:var(--txt2);font-weight:200}
+
+/* 间隔训练 */
+.intro{text-align:center;color:var(--txt2);font-size:14px;margin-bottom:16px}
+.interval-list{width:100%;max-width:340px;margin:0 auto 16px;display:flex;flex-direction:column;gap:8px}
+.int-item{display:flex;align-items:center;gap:10px;padding:12px 16px}
+.int-item .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.int-item .name{flex:1;font-size:14px;color:var(--txt)}
+.int-item .dur{font-size:15px;color:var(--txt2);font-variant-numeric:tabular-nums}
+.int-item .del{background:none;border:none;color:var(--txt2);cursor:pointer;font-size:18px;padding:4px 8px}
+.int-add{padding:12px;text-align:center;color:var(--txt2);font-size:14px;cursor:pointer;border:1px dashed var(--bd);border-radius:14px;background:transparent}
+.int-editor{width:100%;max-width:340px;margin:0 auto 16px;display:none;flex-direction:column;gap:10px}
+.int-editor input{padding:10px 14px;border-radius:12px;border:1px solid var(--bd);background:var(--bg2);color:var(--txt);font-size:14px;outline:none;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.int-editor .row{display:flex;gap:8px}
+.int-editor .row input{flex:1}
+.int-editor .row button{padding:10px 16px;border-radius:12px;border:none;background:var(--acc);color:#fff;font-size:14px;cursor:pointer}
+.rounds-info{font-size:13px;color:var(--txt2);text-align:center;margin-bottom:8px}
+
+/* 秒表 */
+.sw-disp{text-align:center;padding:48px 0 24px}
+.sw-time{font-size:72px;font-weight:200;letter-spacing:-3px;color:var(--txt);font-variant-numeric:tabular-nums}
+.sw-ms{font-size:32px;color:var(--txt2)}
+.laps{margin-top:24px;max-height:280px;overflow-y:auto}
+.lap{display:flex;justify-content:space-between;padding:14px 20px;margin-bottom:8px;font-size:16px;font-variant-numeric:tabular-nums}
+.lap .n{color:var(--txt2)}
+.lap.best{color:#4CAF50}.lap.worst{color:#f44336}
+
+/* 闹钟 */
+.alarm-list{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.alarm{padding:18px 20px;display:flex;align-items:center;justify-content:space-between}
+.alarm .tm{font-size:36px;font-weight:300;color:var(--txt);font-variant-numeric:tabular-nums}
+.alarm .lb{font-size:13px;color:var(--txt2);margin-top:4px}
+.alarm .inf{flex:1}
+.switch{position:relative;width:48px;height:28px;border-radius:14px;background:rgba(255,255,255,.25);border:1px solid var(--bd);cursor:pointer;transition:background .3s;flex-shrink:0}
+.switch.on{background:var(--acc)}
+.switch .kn{position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .3s;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.switch.on .kn{transform:translateX(20px)}
+.empty{text-align:center;color:var(--txt2);padding:60px 20px;font-size:15px}
+.fab{position:fixed;bottom:96px;right:20px;width:56px;height:56px;border-radius:50%;background:var(--acc);color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 20px rgba(var(--pri),.4);z-index:50;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.fab:active{transform:scale(.9)}
+
+/* 设置 */
+.settings-group{margin-bottom:24px}
+.settings-group h3{font-size:13px;color:var(--txt2);margin:0 0 8px 16px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line)}
+.setting-row:first-child{border-radius:16px 16px 0 0}
+.setting-row:last-child{border-radius:0 0 16px 16px;border-bottom:none}
+.setting-row .sl{font-size:15px;color:var(--txt)}
+.setting-row .sv{font-size:14px;color:var(--txt2);display:flex;align-items:center;gap:6px}
+.setting-row .sv select{background:transparent;border:none;color:var(--txt2);font-size:14px;outline:none;appearance:none;-webkit-appearance:none;cursor:pointer;text-align:right}
+.color-picker{display:flex;gap:12px;flex-wrap:wrap;padding:14px 20px}
+.color-dot{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .2s;position:relative}
+.color-dot.active{border-color:var(--txt);transform:scale(1.1)}
+.color-dot .check{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:14px;font-weight:bold;display:none}
+.color-dot.active .check{display:block}
+.ringtone-list{display:flex;flex-direction:column;gap:6px;padding:8px 0}
+.ringtone-item{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;cursor:pointer;border-radius:10px;transition:background .2s}
+.ringtone-item:active{background:rgba(var(--pri),.1)}
+.ringtone-item .rn{font-size:14px;color:var(--txt)}
+.ringtone-item .play{background:none;border:none;color:var(--acc);cursor:pointer;font-size:16px;padding:4px 8px}
+.ringtone-item.active .rn{color:var(--acc);font-weight:600}
+.upload-btn{display:block;width:100%;padding:12px;text-align:center;color:var(--acc);font-size:14px;cursor:pointer;border:1px dashed var(--bd);border-radius:12px;background:transparent;margin-top:8px}
+.about-section{text-align:center;padding:32px 20px}
+.about-logo{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,var(--acc),rgba(var(--pri),.6));margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:32px}
+.about-name{font-size:20px;font-weight:600;color:var(--txt)}
+.about-ver{font-size:13px;color:var(--txt2);margin-top:4px}
+.about-desc{font-size:13px;color:var(--txt2);margin-top:12px;line-height:1.6}
+
+/* 弹窗 */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg);-webkit-backdrop-filter:blur(30px) saturate(160%);backdrop-filter:blur(30px) saturate(160%);border:1px solid var(--bd);border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:24px 20px 32px;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal h2{font-size:18px;font-weight:600;color:var(--txt);margin-bottom:20px;text-align:center}
+.modal .field{margin-bottom:16px}
+.modal .field label{display:block;font-size:13px;color:var(--txt2);margin-bottom:6px}
+.modal .field input,.modal .field select{width:100%;padding:12px 16px;border-radius:12px;border:1px solid var(--bd);background:var(--bg2);color:var(--txt);font-size:16px;outline:none;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.modal .field input[type="time"]{font-size:24px;text-align:center;font-variant-numeric:tabular-nums}
+.modal .actions{display:flex;gap:12px;margin-top:20px}
+.modal .actions button{flex:1;padding:14px;border-radius:14px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s}
+.modal .actions .cancel{background:var(--bg2);color:var(--txt);border:1px solid var(--bd)}
+.modal .actions .ok{background:var(--acc);color:#fff}
+
+::-webkit-scrollbar{width:0}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- 顶栏 -->
+<div class="topbar">
+  <div class="tb-left">
+    <button class="icon-btn" onclick="go('settings')" title="设置"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+  </div>
+  <h1 id="pt">时钟</h1>
+  <div class="tb-right">
+    <button class="icon-btn" onclick="toggleTheme()" title="切换主题"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></button>
+  </div>
+</div>
+
+<!-- 时钟页 -->
+<div class="page active" id="p-clock">
+  <div class="clock-disp">
+    <div class="mini-clock"><div class="hand hh" id="hh"></div><div class="hand mh" id="mh"></div><div class="dot"></div></div>
+    <div class="digi" id="dt">--:--<span class="sec" id="ds">--</span></div>
+    <div class="date" id="dl">----年--月--日</div>
+  </div>
+  <div class="cities" id="cities"></div>
+</div>
+
+<!-- 闹钟页 -->
+<div class="page" id="p-alarm">
+  <div class="alarm-list" id="alarms"><div class="empty">暂无闹钟，点击右下角 + 添加</div></div>
+  <button class="fab" onclick="showAlarmModal()">+</button>
+</div>
+
+<!-- 计时器页 -->
+<div class="page" id="p-timer">
+  <div class="timer-wrap">
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="mt-countdown" onclick="switchTimerMode('countdown')">倒计时</button>
+      <button class="mode-tab" id="mt-interval" onclick="switchTimerMode('interval')">间隔训练</button>
+    </div>
+
+    <!-- 倒计时模式 -->
+    <div id="countdown-panel">
+      <div class="ring" id="ring" style="display:none">
+        <svg width="220" height="220"><circle class="bg" cx="110" cy="110" r="100"/><circle class="fg" id="rfg" cx="110" cy="110" r="100" stroke-dasharray="628.3" stroke-dashoffset="0"/></svg>
+        <div class="txt"><div class="big" id="tdisp">00:00</div></div>
+      </div>
+      <div class="tinput" id="tinput"><input type="number" id="imin" placeholder="00" min="0" max="999" value="5"><span class="sp">:</span><input type="number" id="isec" placeholder="00" min="0" max="59" value="0"></div>
+      <div class="ctrls">
+        <button class="btn btn-s btn-sm" id="trbtn" onclick="resetTimer()" style="display:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg></button>
+        <button class="btn btn-p" onclick="toggleTimer()"><svg id="tplay" width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21"/></svg><svg id="tpause" width="26" height="26" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button>
+      </div>
+      <div class="presets"><button class="chip" onclick="sp(1,0)">1分钟</button><button class="chip" onclick="sp(3,0)">3分钟</button><button class="chip" onclick="sp(5,0)">5分钟</button><button class="chip" onclick="sp(10,0)">10分钟</button><button class="chip" onclick="sp(15,0)">15分钟</button><button class="chip" onclick="sp(25,0)">25分钟</button></div>
+    </div>
+
+    <!-- 间隔训练模式 -->
+    <div id="interval-panel" style="display:none;width:100%">
+      <div class="intro">选择预设或自定义多段计时，自动依次执行</div>
+      <div class="presets" style="margin-bottom:16px">
+        <button class="chip active" id="preset-tabata" onclick="loadPreset('tabata')">Tabata</button>
+        <button class="chip" id="preset-pomodoro" onclick="loadPreset('pomodoro')">番茄钟</button>
+        <button class="chip" id="preset-custom" onclick="loadPreset('custom')">自定义</button>
+      </div>
+      <div class="ring" id="iring" style="display:none;margin:0 auto">
+        <svg width="220" height="220"><circle class="bg" cx="110" cy="110" r="100"/><circle class="fg" id="irfg" cx="110" cy="110" r="100" stroke-dasharray="628.3" stroke-dashoffset="0"/></svg>
+        <div class="txt"><div class="big" id="itdisp">00:00</div><div class="sub" id="istage">准备</div></div>
+      </div>
+      <div class="interval-list" id="intList"></div>
+      <div class="rounds-info" id="roundsInfo"></div>
+      <div class="int-editor" id="intEditor">
+        <input type="text" id="ieName" placeholder="阶段名称（如：运动、休息）">
+        <div class="row"><input type="number" id="ieMin" placeholder="分钟" min="0" max="999"><input type="number" id="ieSec" placeholder="秒" min="0" max="59"><button onclick="addInterval()">添加</button></div>
+      </div>
+      <div class="int-add" id="intAddBtn" onclick="toggleIntEditor()">+ 添加阶段</div>
+      <div class="ctrls">
+        <button class="btn btn-s btn-sm" id="irbtn" onclick="resetInterval()" style="display:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg></button>
+        <button class="btn btn-p" onclick="toggleInterval()"><svg id="iplay" width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21"/></svg><svg id="ipause" width="26" height="26" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 秒表页 -->
+<div class="page" id="p-stopwatch">
+  <div class="sw-disp"><div class="sw-time" id="swt">00:00<span class="sw-ms" id="swm">.00</span></div></div>
+  <div class="ctrls" style="justify-content:center">
+    <button class="btn btn-s btn-sm" id="lapbtn" onclick="lapSw()" style="display:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></button>
+    <button class="btn btn-p" onclick="toggleSw()"><svg id="swplay" width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,3 20,12 6,21"/></svg><svg id="swpause" width="26" height="26" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button>
+    <button class="btn btn-s btn-sm" id="swrbtn" onclick="resetSw()" style="display:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg></button>
+  </div>
+  <div class="laps" id="swlaps"></div>
+</div>
+
+<!-- 设置页 -->
+<div class="page" id="p-settings">
+  <div class="settings-group">
+    <h3>通用设置</h3>
+    <div class="glass" style="overflow:hidden">
+      <div class="setting-row"><span class="sl">默认页面</span><span class="sv"><select id="setDefaultTab" onchange="saveSetting('defaultTab',this.value)"><option value="clock">时钟</option><option value="alarm">闹钟</option><option value="timer">计时器</option><option value="stopwatch">秒表</option></select></span></div>
+      <div class="setting-row"><span class="sl">时间格式</span><span class="sv"><select id="setTimeFormat" onchange="saveSetting('timeFormat',this.value);tick()"><option value="24">24小时</option><option value="12">12小时</option></select></span></div>
+      <div class="setting-row"><span class="sl">显示秒数</span><span class="sv"><div class="switch" id="swShowSec" onclick="toggleSetting('showSeconds',this)"><div class="kn"></div></div></span></div>
+      <div class="setting-row"><span class="sl">世界时钟</span><span class="sv"><div class="switch on" id="swWorldClock" onclick="toggleSetting('showWorldClock',this)"><div class="kn"></div></div></span></div>
+      <div class="setting-row"><span class="sl">动画效果</span><span class="sv"><div class="switch on" id="swAnim" onclick="toggleSetting('animations',this)"><div class="kn"></div></div></span></div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h3>主题颜色</h3>
+    <div class="glass">
+      <div class="color-picker" id="colorPicker"></div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h3>铃声</h3>
+    <div class="glass" style="padding:8px 0">
+      <div class="ringtone-list" id="ringtoneList"></div>
+      <div style="padding:0 20px 16px"><label class="upload-btn" for="ringtoneUpload">+ 添加本地音频</label><input type="file" id="ringtoneUpload" accept="audio/*" style="display:none" onchange="uploadRingtone(this)"></div>
+    </div>
+  </div>
+
+  <div class="settings-group">
+    <h3>关于</h3>
+    <div class="glass">
+      <div class="about-section">
+        <div class="about-logo">⏱</div>
+        <div class="about-name">clock</div>
+        <div class="about-ver">版本 0.0.1 · 仿iOS27液态玻璃版</div>
+        <div class="about-desc">极简时钟 · 闹钟 · 计时器 · 秒表<br>Power by SWFB</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 底部导航 -->
+<div class="tabbar">
+  <button class="tab active" data-page="clock" onclick="go('clock')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span>时钟</span></button>
+  <button class="tab" data-page="alarm" onclick="go('alarm')"><svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span>闹钟</span></button>
+  <button class="tab" data-page="timer" onclick="go('timer')"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg><span>计时器</span></button>
+  <button class="tab" data-page="stopwatch" onclick="go('stopwatch')"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg><span>秒表</span></button>
+</div>
+
+<!-- 闹钟编辑弹窗 -->
+<div class="modal-overlay" id="alarmModal">
+  <div class="modal">
+    <h2 id="alarmModalTitle">添加闹钟</h2>
+    <div class="field"><label>时间</label><input type="time" id="alarmTime" value="07:30"></div>
+    <div class="field"><label>标签</label><input type="text" id="alarmLabel" placeholder="闹钟标签" value="起床"></div>
+    <div class="field"><label>铃声</label><select id="alarmSound"><option value="beep">默认提示音</option><option value="chime">清脆铃声</option><option value="bell">钟声</option><option value="digital">电子音</option></select></div>
+    <div class="actions"><button class="cancel" onclick="closeAlarmModal()">取消</button><button class="ok" onclick="saveAlarm()">保存</button></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ==================== 状态管理 ====================
+const LS_KEY='clock_v2';
+let state=JSON.parse(localStorage.getItem(LS_KEY)||'{}');
+state={theme:state.theme||'light',color:state.color||'purple',defaultTab:state.defaultTab||'clock',timeFormat:state.timeFormat||'24',showSeconds:state.showSeconds!==false,showWorldClock:state.showWorldClock!==false,animations:state.animations!==false,ringtone:state.ringtone||'beep',customRingtones:state.customRingtones||[],alarms:state.alarms||[]};
+function save(){localStorage.setItem(LS_KEY,JSON.stringify(state))}
+function saveSetting(k,v){state[k]=v;save()}
+function toggleSetting(k,el){state[k]=!state[k];el.classList.toggle('on',state[k]);save();if(k==='showSeconds')tick();if(k==='showWorldClock')tick();if(k==='animations')document.body.style.animationPlayState=state[k]?'running':'paused'}
+
+// ==================== 主题颜色 ====================
+const COLORS={
+  purple:{light:'155,127,208',dark:'183,154,232',name:'暖紫',hex:'#9b7fd0'},
+  green:{light:'127,208,161',dark:'154,232,189',name:'薄荷绿',hex:'#7fd0a1'},
+  blue:{light:'127,165,208',dark:'154,188,232',name:'天空蓝',hex:'#7fa5d0'}
+};
+function applyColor(){const c=COLORS[state.color];const isDark=state.theme==='dark';document.documentElement.style.setProperty('--pri',isDark?c.dark:c.light)}
+function renderColorPicker(){const el=document.getElementById('colorPicker');el.innerHTML=Object.entries(COLORS).map(([k,c])=>`<div class="color-dot ${state.color===k?'active':''}" style="background:${c.hex}" onclick="setColor('${k}')" title="${c.name}"><span class="check">✓</span></div>`).join('')}
+function setColor(k){state.color=k;save();applyColor();renderColorPicker()}
+
+// ==================== 主题切换 ====================
+function toggleTheme(){state.theme=state.theme==='dark'?'light':'dark';save();applyTheme()}
+function applyTheme(){if(state.theme==='dark')document.documentElement.setAttribute('data-theme','dark');else document.documentElement.removeAttribute('data-theme');applyColor()}
+
+// ==================== 页面切换 ====================
+const PT={clock:'时钟',alarm:'闹钟',timer:'计时器',stopwatch:'秒表',settings:'设置'};
+function go(p){document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));document.getElementById('p-'+p).classList.add('active');const tab=document.querySelector(`.tab[data-page="${p}"]`);if(tab)tab.classList.add('active');document.getElementById('pt').textContent=PT[p]}
+
+// ==================== 时钟 ====================
+const defaultCities=[{n:'纽约',z:'America/New_York'},{n:'伦敦',z:'Europe/London'},{n:'东京',z:'Asia/Tokyo'},{n:'悉尼',z:'Australia/Sydney'}];
+function tick(){const now=new Date();const h=now.getHours()%12,m=now.getMinutes(),s=now.getSeconds();
+document.getElementById('hh').style.transform=`rotate(${(h+m/60)*30}deg)`;
+document.getElementById('mh').style.transform=`rotate(${(m+s/60)*6}deg)`;
+let hh=now.getHours();let ampm='';
+if(state.timeFormat==='12'){ampm=hh>=12?' PM':' AM';hh=hh%12||12}
+const secHtml=state.showSeconds?`<span class="sec">${String(s).padStart(2,'0')}${ampm}</span>`:ampm?`<span class="sec">${ampm}</span>`:'';
+document.getElementById('dt').innerHTML=`${String(hh).padStart(2,'0')}:${String(m).padStart(2,'0')}${secHtml}`;
+const d=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+document.getElementById('dl').textContent=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${d[now.getDay()]}`;
+if(state.showWorldClock){document.getElementById('cities').style.display='flex';document.getElementById('cities').innerHTML=defaultCities.map(c=>{const t=new Date(now.toLocaleString('en-US',{timeZone:c.z}));const diff=Math.round((t-now)/3600000);return `<div class="city glass"><div><div class="n">${c.n}</div><div class="d">${diff>=0?'+':''}${diff}小时</div></div><div class="t">${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}</div></div>`}).join('')}else{document.getElementById('cities').style.display='none'}
+}
+setInterval(tick,1000);
+
+// ==================== 倒计时 ====================
+let ti=null,tr=0,tt=0,trun=false;
+function sp(m,s){document.getElementById('imin').value=m;document.getElementById('isec').value=s}
+function toggleTimer(){trun?pauseTimer():startTimer()}
+function startTimer(){if(tr<=0){const m=parseInt(document.getElementById('imin').value)||0,s=parseInt(document.getElementById('isec').value)||0;tr=tt=m*60+s;if(tr<=0)return}
+trun=true;document.getElementById('tinput').style.display='none';document.querySelector('#countdown-panel .presets').style.display='none';document.getElementById('ring').style.display='block';document.getElementById('trbtn').style.display='flex';document.getElementById('tplay').style.display='none';document.getElementById('tpause').style.display='block';
+ti=setInterval(()=>{tr--;updTimer();if(tr<=0){clearInterval(ti);trun=false;playRingtone();setTimeout(()=>{alert('计时结束！');resetTimer()},300)}},1000);updTimer()}
+function pauseTimer(){trun=false;clearInterval(ti);document.getElementById('tplay').style.display='block';document.getElementById('tpause').style.display='none'}
+function resetTimer(){clearInterval(ti);trun=false;tr=0;tt=0;document.getElementById('tinput').style.display='flex';document.querySelector('#countdown-panel .presets').style.display='flex';document.getElementById('ring').style.display='none';document.getElementById('trbtn').style.display='none';document.getElementById('tplay').style.display='block';document.getElementById('tpause').style.display='none'}
+function updTimer(){document.getElementById('tdisp').textContent=`${String(Math.floor(tr/60)).padStart(2,'0')}:${String(tr%60).padStart(2,'0')}`;document.getElementById('rfg').style.strokeDashoffset=628.3*(1-(tt>0?tr/tt:0))}
+
+// ==================== 间隔训练 ====================
+const PRESETS={
+  tabata:[{n:'热身',d:5,color:'#FFC107'},{n:'运动',d:20,color:'#f44336'},{n:'休息',d:10,color:'#4CAF50'}],
+  pomodoro:[{n:'专注',d:1500,color:'#f44336'},{n:'休息',d:300,color:'#4CAF50'}],
+  custom:[]
+};
+let curPreset='tabata',intervals=JSON.parse(JSON.stringify(PRESETS.tabata)),intRounds=8;
+let ii=null,istage=0,irem=0,irun=false,itotal=0;
+function switchTimerMode(m){document.getElementById('mt-countdown').classList.toggle('active',m==='countdown');document.getElementById('mt-interval').classList.toggle('active',m==='interval');document.getElementById('countdown-panel').style.display=m==='countdown'?'block':'none';document.getElementById('interval-panel').style.display=m==='interval'?'block':'none';if(m==='interval')renderIntervals()}
+function loadPreset(p){curPreset=p;document.querySelectorAll('#interval-panel .chip').forEach(c=>c.classList.remove('active'));document.getElementById('preset-'+p).classList.add('active');
+if(p==='tabata'){intervals=JSON.parse(JSON.stringify(PRESETS.tabata));intRounds=8}
+else if(p==='pomodoro'){intervals=JSON.parse(JSON.stringify(PRESETS.pomodoro));intRounds=4}
+else{intervals=[];intRounds=1}
+resetInterval();renderIntervals();document.getElementById('intEditor').style.display=p==='custom'?'flex':'none';document.getElementById('intAddBtn').style.display=p==='custom'?'block':'none'}
+function renderIntervals(){const el=document.getElementById('intList');
+if(intervals.length===0){el.innerHTML='<div class="empty" style="padding:20px">点击下方添加阶段</div>'}
+else{el.innerHTML=intervals.map((it,i)=>`<div class="int-item glass"><div class="dot" style="background:${it.color}"></div><span class="name">${it.n}</span><span class="dur">${fmtDur(it.d)}</span>${curPreset==='custom'?`<button class="del" onclick="delInterval(${i})">×</button>`:''}</div>`).join('')}
+const total=intervals.reduce((s,it)=>s+it.d,0)*intRounds;
+document.getElementById('roundsInfo').textContent=intervals.length>0?`共 ${intRounds} 轮 · 总计 ${fmtDur(total)}`:''}
+function fmtDur(s){const m=Math.floor(s/60);return m>0?`${m}分${s%60>0?s%60+'秒':''}`:`${s}秒`}
+function toggleIntEditor(){const e=document.getElementById('intEditor');e.style.display=e.style.display==='flex'?'none':'flex'}
+function addInterval(){const n=document.getElementById('ieName').value.trim()||'阶段';const m=parseInt(document.getElementById('ieMin').value)||0;const s=parseInt(document.getElementById('ieSec').value)||0;const d=m*60+s;if(d<=0)return;const colors=['#f44336','#4CAF50','#FFC107','#2196F3','#9C27B0','#FF9800'];intervals.push({n,d,color:colors[intervals.length%colors.length]});document.getElementById('ieName').value='';document.getElementById('ieMin').value='';document.getElementById('ieSec').value='';renderIntervals()}
+function delInterval(i){intervals.splice(i,1);renderIntervals()}
+function toggleInterval(){irun?pauseInterval():startInterval()}
+function startInterval(){if(intervals.length===0)return;
+if(!irun&&irem<=0){istage=0;irem=intervals[0].d;itotal=intervals[0].d}
+irun=true;document.getElementById('iring').style.display='block';document.getElementById('intList').style.display='none';document.getElementById('roundsInfo').style.display='none';document.getElementById('intAddBtn').style.display='none';document.getElementById('intEditor').style.display='none';document.getElementById('irbtn').style.display='flex';document.getElementById('iplay').style.display='none';document.getElementById('ipause').style.display='block';
+ii=setInterval(()=>{irem--;updInterval();
+if(irem<=0){playRingtone();istage++;
+if(istage>=intervals.length){intRounds--;if(intRounds<=0){clearInterval(ii);irun=false;setTimeout(()=>{alert('训练完成！🎉');resetInterval()},500);return}istage=0}
+irem=itotal=intervals[istage].d}},1000);updInterval()}
+function pauseInterval(){irun=false;clearInterval(ii);document.getElementById('iplay').style.display='block';document.getElementById('ipause').style.display='none'}
+function resetInterval(){clearInterval(ii);irun=false;istage=0;irem=0;
+if(curPreset==='tabata')intRounds=8;else if(curPreset==='pomodoro')intRounds=4;
+document.getElementById('iring').style.display='none';document.getElementById('intList').style.display='flex';document.getElementById('roundsInfo').style.display='block';document.getElementById('intAddBtn').style.display=curPreset==='custom'?'block':'none';document.getElementById('intEditor').style.display='none';document.getElementById('irbtn').style.display='none';document.getElementById('iplay').style.display='block';document.getElementById('ipause').style.display='none';renderIntervals()}
+function updInterval(){const it=intervals[istage]||{n:'',color:''};document.getElementById('itdisp').textContent=`${String(Math.floor(irem/60)).padStart(2,'0')}:${String(irem%60).padStart(2,'0')}`;document.getElementById('istage').textContent=`${it.n} · 第 ${intRounds} 轮`;document.getElementById('irfg').style.strokeDashoffset=628.3*(1-(itotal>0?irem/itotal:0));document.getElementById('irfg').style.stroke=it.color}
+
+// ==================== 秒表 ====================
+let swi=null,sw=0,swrun=false,swlaps=[];
+function toggleSw(){if(swrun){swrun=false;clearInterval(swi);document.getElementById('swplay').style.display='block';document.getElementById('swpause').style.display='none'}else{swrun=true;const st=Date.now()-sw;swi=setInterval(()=>{sw=Date.now()-st;updSw()},10);document.getElementById('swplay').style.display='none';document.getElementById('swpause').style.display='block';document.getElementById('lapbtn').style.display='flex';document.getElementById('swrbtn').style.display='flex'}}
+function resetSw(){clearInterval(swi);swrun=false;sw=0;swlaps=[];updSw();document.getElementById('swlaps').innerHTML='';document.getElementById('swplay').style.display='block';document.getElementById('swpause').style.display='none';document.getElementById('lapbtn').style.display='none';document.getElementById('swrbtn').style.display='none'}
+function lapSw(){swlaps.unshift(sw);renderLaps()}
+function renderLaps(){const times=swlaps.map(l=>l);const best=Math.min(...times),worst=Math.max(...times);
+document.getElementById('swlaps').innerHTML=swlaps.map((l,i)=>`<div class="lap glass ${times.length>1&&l===best?'best':''} ${times.length>1&&l===worst?'worst':''}"><span class="n">圈${swlaps.length-i}</span><span>${fmtMs(l)}</span></div>`).join('')}
+function fmtMs(ms){return `${String(Math.floor(ms/60000)).padStart(2,'0')}:${String(Math.floor((ms%60000)/1000)).padStart(2,'0')}`}
+function updSw(){document.getElementById('swt').innerHTML=`${String(Math.floor(sw/60000)).padStart(2,'0')}:${String(Math.floor((sw%60000)/1000)).padStart(2,'0')}<span class="sw-ms">.${String(Math.floor((sw%1000)/10)).padStart(2,'0')}</span>`}
+
+// ==================== 闹钟 ====================
+let editingAlarmIdx=-1;
+function showAlarmModal(idx){editingAlarmIdx=idx>=0?idx:-1;document.getElementById('alarmModalTitle').textContent=idx>=0?'编辑闹钟':'添加闹钟';
+if(idx>=0){const a=state.alarms[idx];document.getElementById('alarmTime').value=a.t;document.getElementById('alarmLabel').value=a.l;document.getElementById('alarmSound').value=a.s||'beep'}
+else{document.getElementById('alarmTime').value='07:30';document.getElementById('alarmLabel').value='起床';document.getElementById('alarmSound').value='beep'}
+document.getElementById('alarmModal').classList.add('show')}
+function closeAlarmModal(){document.getElementById('alarmModal').classList.remove('show')}
+function saveAlarm(){const t=document.getElementById('alarmTime').value;const l=document.getElementById('alarmLabel').value;const s=document.getElementById('alarmSound').value;
+if(editingAlarmIdx>=0){state.alarms[editingAlarmIdx]={t,l,s,o:state.alarms[editingAlarmIdx].o}}
+else{state.alarms.push({t,l,s,o:true})}
+save();renderAlarms();closeAlarmModal()}
+function deleteAlarm(i){state.alarms.splice(i,1);save();renderAlarms()}
+function toggleAlarm(i){state.alarms[i].o=!state.alarms[i].o;save();renderAlarms()}
+function renderAlarms(){const l=document.getElementById('alarms');
+if(!state.alarms.length){l.innerHTML='<div class="empty">暂无闹钟，点击右下角 + 添加</div>';return}
+l.innerHTML=state.alarms.map((a,i)=>`<div class="alarm glass" onclick="showAlarmModal(${i})"><div class="inf"><div class="tm">${a.t}</div><div class="lb">${a.l||'闹钟'}</div></div><div class="switch ${a.o?'on':''}" onclick="event.stopPropagation();toggleAlarm(${i})"><div class="kn"></div></div></div>`).join('')}
+// 闹钟检测
+setInterval(()=>{const now=new Date();const ct=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+state.alarms.forEach((a,i)=>{if(a.o&&a.t===ct&&now.getSeconds()===0){playRingtone(a.s);setTimeout(()=>alert(`⏰ ${a.l||'闹钟'}: ${a.t}`),200)}})},1000)
+
+// ==================== 铃声 ====================
+const BUILTIN_RINGTONES=[
+  {id:'beep',name:'默认提示音',freq:880,pattern:[200,100,200]},
+  {id:'chime',name:'清脆铃声',freq:1200,pattern:[150,80,150,80,300]},
+  {id:'bell',name:'钟声',freq:660,pattern:[500,200,500]},
+  {id:'digital',name:'电子音',freq:1000,pattern:[100,50,100,50,100,50,200]}
+];
+function renderRingtones(){const el=document.getElementById('ringtoneList');
+const all=[...BUILTIN_RINGTONES,...state.customRingtones];
+el.innerHTML=all.map(r=>`<div class="ringtone-item ${state.ringtone===r.id?'active':''}" onclick="setRingtone('${r.id}')"><span class="rn">${r.name}</span><button class="play" onclick="event.stopPropagation();playRingtone('${r.id}')">▶</button></div>`).join('')}
+function setRingtone(id){state.ringtone=id;save();renderRingtones()}
+function playRingtone(id){id=id||state.ringtone;const custom=state.customRingtones.find(r=>r.id===id);
+if(custom){const audio=new Audio(custom.data);audio.play().catch(()=>{});return}
+const r=BUILTIN_RINGTONES.find(x=>x.id===id)||BUILTIN_RINGTONES[0];
+try{const ctx=new(window.AudioContext||window.webkitAudioContext)();let t=ctx.currentTime;
+r.pattern.forEach((dur,i)=>{if(i%2===0){const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=r.freq*(i>0?1.2:1);o.type='sine';g.gain.setValueAtTime(0.3,t);g.gain.exponentialRampToValueAtTime(0.001,t+dur/1000);o.start(t);o.stop(t+dur/1000)}t+=dur/1000})}catch(e){}}
+function uploadRingtone(input){const file=input.files[0];if(!file)return;
+const reader=new FileReader();reader.onload=e=>{const id='custom_'+Date.now();state.customRingtones.push({id,name:file.name.replace(/\.[^.]+$/,''),data:e.target.result});save();renderRingtones()};reader.readAsDataURL(file);input.value=''}
+
+// ==================== 初始化 ====================
+function init(){applyTheme();renderColorPicker();renderRingtones();renderAlarms();renderIntervals();
+document.getElementById('setDefaultTab').value=state.defaultTab;
+document.getElementById('setTimeFormat').value=state.timeFormat;
+document.getElementById('swShowSec').classList.toggle('on',state.showSeconds);
+document.getElementById('swWorldClock').classList.toggle('on',state.showWorldClock);
+document.getElementById('swAnim').classList.toggle('on',state.animations);
+tick();go(state.defaultTab)}
+init();
+</script>
+</body>
+</html>
