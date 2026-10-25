@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="reset">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F6F1E8">
+<title>春暖花开</title>
+<style>
+/* ============================================================================
+   Layer 1 · 设计令牌
+   ============================================================================ */
+:root,
+[data-theme="reset"] {
+  --pageBg:#F6F1E8; --cardBg:#EFE8DC; --inputBg:#E7DECF; --hoverBg:#DFD4C1;
+  --emphasis:#E4DAC8; --divider:#DFD4C1;
+  --accent:#B4552B; --accentDark:#9E471F; --accentPressed:#853A17;
+  --accent-rgb:180,85,43;
+  --textPrimary:#262117; --textSecondary:#5D5545; --textHint:#9C937F;
+  --btnText:#FFFFFF;
+  --lg-pri-rgb:180,85,43; --lg-bg-rgb:246,241,232;
+  color-scheme: light;
+}
+[data-theme="reset-dark"] {
+  --pageBg:#171310; --cardBg:#1F1A15; --inputBg:#262019; --hoverBg:#2E261D;
+  --emphasis:#241E17; --divider:#3A3022;
+  --accent:#D98A4E; --accentDark:#C8783B; --accentPressed:#B4672C;
+  --accent-rgb:217,138,78;
+  --textPrimary:#F4EDE2; --textSecondary:#C9BCA6; --textHint:#8F8371;
+  --btnText:#171310;
+  --lg-pri-rgb:217,138,78; --lg-bg-rgb:23,19,16;
+}
+[data-theme="reset-navy"] {
+  --pageBg:#F5EFEA; --cardBg:#EDE6DF; --inputBg:#E5DDD5; --hoverBg:#DDD4CB;
+  --emphasis:#E8DFD6; --divider:#DDD4CB;
+  --accent:#122E8A; --accentDark:#0E2470; --accentPressed:#0A1C58;
+  --accent-rgb:18,46,138;
+  --textPrimary:#122E8A; --textSecondary:#3E5299; --textHint:#7E8AB8;
+  --btnText:#F5EFEA;
+  --lg-pri-rgb:18,46,138; --lg-bg-rgb:245,239,234;
+}
+[data-theme="purple"] {
+  --pageBg:#F0EBF5; --cardBg:#E0D4F0; --inputBg:#D8C9EB; --hoverBg:#D0BEF0;
+  --emphasis:#D5C8E8; --divider:#D0BEF0;
+  --accent:#9B7FD0; --accentDark:#8A6EC0; --accentPressed:#7A5EB0;
+  --accent-rgb:155,127,208;
+  --textPrimary:#3D2855; --textSecondary:#6A5080; --textHint:#A890C0;
+  --btnText:#FFFFFF;
+  --lg-pri-rgb:155,127,208; --lg-bg-rgb:240,235,245;
+}
+[data-theme="green"] {
+  --pageBg:#EBF5F1; --cardBg:#D4F0E2; --inputBg:#C9EBDA; --hoverBg:#BEF0D4;
+  --emphasis:#C8E8D7; --divider:#BEF0D4;
+  --accent:#7FD0A1; --accentDark:#6EC090; --accentPressed:#5EB080;
+  --accent-rgb:127,208,161;
+  --textPrimary:#285540; --textSecondary:#50806D; --textHint:#90C0AB;
+  --btnText:#FFFFFF;
+  --lg-pri-rgb:127,208,161; --lg-bg-rgb:235,245,241;
+}
+[data-theme="blue"] {
+  --pageBg:#EBEEF5; --cardBg:#D4DFF0; --inputBg:#C9D6EB; --hoverBg:#BED5F0;
+  --emphasis:#C8D5E8; --divider:#BED5F0;
+  --accent:#7FA5D0; --accentDark:#6E95C0; --accentPressed:#5E85B0;
+  --accent-rgb:127,165,208;
+  --textPrimary:#283855; --textSecondary:#505D80; --textHint:#909FC0;
+  --btnText:#FFFFFF;
+  --lg-pri-rgb:127,165,208; --lg-bg-rgb:235,238,245;
+}
+[data-theme="bw"] {
+  --pageBg:#F0F0F0; --cardBg:#E2E2E2; --inputBg:#DADADA; --hoverBg:#D7D7D7;
+  --emphasis:#D8D8D8; --divider:#D7D7D7;
+  --accent:#212121; --accentDark:#000000; --accentPressed:#333333;
+  --accent-rgb:33,33,33;
+  --textPrimary:#3E3E3E; --textSecondary:#686868; --textHint:#A8A8A8;
+  --btnText:#FFFFFF;
+  --lg-pri-rgb:33,33,33; --lg-bg-rgb:240,240,240;
+}
+
+:root {
+  --sidebar-bg: var(--cardBg);
+  --avatar-ring: var(--cardBg);
+  --card-shadow: 0 1px 2px rgba(38,33,23,.04), 0 10px 30px rgba(38,33,23,.06);
+  --card-shadow-hover: 0 1px 2px rgba(38,33,23,.05), 0 16px 36px rgba(38,33,23,.11);
+
+  --lg-blur: 18px;
+  --lg-blur-strong: 20px;
+  --lg-alpha: 0.22;
+  --lg-border: rgba(255,255,255,.45);
+  --lg-inset: inset 0 1px 2px rgba(255,255,255,.45);
+  --lg-shadow: 0 8px 32px rgba(31,27,46,.13);
+  --lg-soft: 0 4px 18px rgba(31,27,46,.08);
+}
+[data-theme$="-dark"] {
+  color-scheme: dark;
+  --card-shadow: 0 1px 2px rgba(0,0,0,.30), 0 12px 32px rgba(0,0,0,.28);
+  --card-shadow-hover: 0 1px 2px rgba(0,0,0,.34), 0 18px 40px rgba(0,0,0,.40);
+  --lg-border: rgba(255,255,255,.12);
+  --lg-inset: inset 0 1px 2px rgba(255,255,255,.05);
+  --lg-shadow: 0 8px 32px rgba(0,0,0,.42);
+  --lg-soft: 0 4px 18px rgba(0,0,0,.34);
+}
+
+/* ============================================================================
+   Layer 2 · 桥接令牌
+   ============================================================================ */
+:root {
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 9999px;
+
+  --sidebar-w: 260px;
+  --sidebar-w-collapsed: 76px;
+
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px;
+  --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px;
+
+  --fs-h1: 34px;
+  --fs-body: 16px;
+  --fs-sub: 14px;
+  --fs-small: 13px;
+  --fs-tiny: 11px;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --dur: 200ms;
+  --dur-fast: 140ms;
+  --dur-slide: 450ms;
+}
+
+/* ============================================================================
+   Layer 3 · 重置
+   ============================================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  color: var(--textPrimary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: var(--fs-body);
+  line-height: 1.7;
+  overflow-x: hidden;
+  background:
+    radial-gradient(50% 40% at 88% -8%, rgba(var(--accent-rgb), .10), transparent 62%),
+    radial-gradient(44% 36% at 0% 104%, rgba(var(--accent-rgb), .06), transparent 62%),
+    var(--pageBg);
+  background-attachment: fixed;
+  transition: background-color var(--dur) var(--ease-out),
+              color var(--dur) var(--ease-out);
+}
+body.lg-enable {
+  background:
+    radial-gradient(58% 42% at 12% 8%, rgba(var(--lg-pri-rgb), .34), transparent 62%),
+    radial-gradient(52% 40% at 88% 12%, rgba(var(--lg-pri-rgb), .16), transparent 62%),
+    radial-gradient(66% 52% at 80% 92%, rgba(var(--lg-pri-rgb), .22), transparent 66%),
+    linear-gradient(160deg, var(--pageBg) 0%, var(--pageBg) 52%, #FFFFFF 100%);
+  background-size: 240% 240%, 240% 240%, 240% 240%, 100% 100%;
+  background-attachment: fixed;
+}
+[data-theme$="-dark"] body.lg-enable {
+  background:
+    radial-gradient(58% 42% at 12% 8%, rgba(var(--lg-pri-rgb), .22), transparent 62%),
+    radial-gradient(52% 40% at 88% 12%, rgba(var(--lg-pri-rgb), .12), transparent 62%),
+    radial-gradient(66% 52% at 80% 92%, rgba(var(--lg-pri-rgb), .16), transparent 66%),
+    linear-gradient(160deg, var(--pageBg) 0%, var(--cardBg) 55%, var(--pageBg) 100%);
+  background-size: 240% 240%, 240% 240%, 240% 240%, 100% 100%;
+  background-attachment: fixed;
+}
+
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+
+button, a, select {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  font-family: inherit;
+  color: inherit;
+}
+
+::selection { background: rgba(var(--accent-rgb), .22); }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--accent-rgb), .32);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(var(--accent-rgb), .55); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================================
+   Layer 4 · 骨架
+   ============================================================================ */
+.layout { display: flex; min-height: 100vh; min-height: 100dvh; }
+
+.sb-backdrop {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.38); z-index: 150;
+  opacity: 0; pointer-events: none;
+  transition: opacity 300ms var(--ease-out);
+}
+.sb-backdrop.visible { opacity: 1; pointer-events: auto; }
+
+/* ------------------------------ 侧栏 ------------------------------ */
+.sidebar {
+  flex: 0 0 var(--sidebar-w); width: var(--sidebar-w);
+  height: 100vh; height: 100dvh;
+  position: sticky; top: 0; z-index: 100;
+  display: flex; flex-direction: column; gap: var(--sp-2);
+  padding: 24px 20px 20px;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--divider);
+  overflow: hidden;
+  transition:
+    flex-basis var(--dur-slide) var(--ease-out),
+    width var(--dur-slide) var(--ease-out),
+    padding var(--dur-slide) var(--ease-out),
+    background-color var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out);
+}
+body.lg-enable .sidebar {
+  background: rgba(var(--lg-bg-rgb), var(--lg-alpha));
+  border-right: 1px solid var(--lg-border);
+  box-shadow: var(--lg-shadow), var(--lg-inset);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(150%);
+  backdrop-filter: blur(var(--lg-blur)) saturate(150%);
+}
+
+/* 品牌区 = 侧栏开关 */
+.brand {
+  position: relative; display: flex; align-items: center;
+  flex-shrink: 0; width: 100%; height: 38px;
+  padding: 0 4px; margin: 4px 0 30px;
+  border: none; background: transparent; cursor: pointer;
+  border-radius: var(--radius-sm);
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+.brand::after {
+  content: ''; position: absolute;
+  left: 0; right: 0; bottom: -16px; height: 1px;
+  background: var(--divider);
+  transition: background-color var(--dur) var(--ease-out);
+}
+body.lg-enable .brand::after { background: var(--lg-border); }
+
+.brand-arrow {
+  position: absolute; left: 50%; top: 50%;
+  width: 34px; height: 34px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 9px;
+  color: var(--textSecondary);
+  background: transparent;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  transition: opacity 160ms var(--ease-out),
+              transform 340ms var(--ease-out),
+              color var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out);
+}
+.brand-arrow svg { display: block; }
+
+.brand-main {
+  display: flex; align-items: center; gap: 12px;
+  min-width: 0; max-width: 0; opacity: 0;
+  overflow: hidden; white-space: nowrap;
+  transition: max-width var(--dur-slide) var(--ease-out),
+              opacity 160ms var(--ease-out);
+}
+.brand-mark {
+  flex: 0 0 auto; width: 38px; height: 38px;
+  border-radius: 11px;
+  display: grid; place-items: center;
+  background: var(--accent); color: var(--btnText);
+  font-size: 17px; font-weight: 800;
+  box-shadow: 0 4px 14px rgba(var(--accent-rgb), .28);
+}
+.brand-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.4; }
+.brand-name {
+  font-size: var(--fs-small); font-weight: 700;
+  letter-spacing: .02em; color: var(--textPrimary); white-space: nowrap;
+}
+.brand-sub {
+  font-size: var(--fs-tiny); color: var(--textHint);
+  letter-spacing: .16em; text-transform: uppercase; white-space: nowrap;
+}
+
+.sidebar[data-collapsed="false"] .brand-arrow {
+  opacity: 0;
+  transform: translate(calc(-50% - 22px), -50%) scale(.65);
+  pointer-events: none;
+}
+.sidebar[data-collapsed="false"] .brand-main {
+  max-width: 220px; opacity: 1;
+  transition: max-width var(--dur-slide) var(--ease-out),
+              opacity 240ms var(--ease-out) 190ms;
+}
+.sidebar[data-collapsed="true"] .brand-arrow {
+  transition: opacity 180ms var(--ease-out) 150ms,
+              transform 340ms var(--ease-out) 110ms,
+              color var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out);
+}
+
+.sidebar-nav {
+  display: flex; flex-direction: column; gap: 2px;
+  flex: 1; min-height: 0;
+}
+.nav-item {
+  position: relative; display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sub); font-weight: 500;
+  color: var(--textSecondary);
+  transition: background-color var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out),
+              padding var(--dur-slide) var(--ease-out),
+              gap var(--dur-slide) var(--ease-out);
+}
+.nav-icon {
+  width: 20px; flex: 0 0 auto; text-align: center;
+  font-size: 15px; color: var(--textHint);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.nav-label { white-space: nowrap; }
+.nav-item.active {
+  background: var(--emphasis); color: var(--accent); font-weight: 700;
+}
+.nav-item.active::before {
+  content: ''; position: absolute;
+  left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 18px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+}
+.nav-item.active .nav-icon { color: var(--accent); }
+body.lg-enable .nav-item:hover { background: rgba(var(--lg-pri-rgb), .16); }
+body.lg-enable .nav-item.active { background: rgba(var(--lg-pri-rgb), .20); }
+
+.sidebar-foot {
+  flex-shrink: 0; padding-top: var(--sp-4);
+  border-top: 1px solid var(--divider);
+  transition: border-color var(--dur) var(--ease-out),
+              padding var(--dur-slide) var(--ease-out);
+}
+body.lg-enable .sidebar-foot { border-top-color: var(--lg-border); }
+
+.theme-toggle {
+  width: 100%; display: flex; align-items: center; gap: 10px;
+  padding: 10px 13px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--divider);
+  background: transparent;
+  color: var(--textSecondary);
+  font-size: var(--fs-small); font-weight: 500;
+  white-space: nowrap; cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out),
+              padding var(--dur-slide) var(--ease-out);
+}
+body.lg-enable .theme-toggle {
+  background: rgba(var(--lg-bg-rgb), calc(var(--lg-alpha) * .65));
+  border-color: var(--lg-border);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.theme-icon { font-size: 14px; line-height: 1; flex: 0 0 auto; }
+.theme-toggle[aria-pressed="true"] {
+  color: var(--accent);
+  border-color: rgba(var(--accent-rgb), .45);
+}
+
+.nav-label, .theme-text {
+  max-width: 220px; overflow: hidden; opacity: 1;
+  transition: opacity 220ms var(--ease-out),
+              max-width var(--dur-slide) var(--ease-out);
+}
+
+.sidebar[data-collapsed="true"] {
+  flex: 0 0 var(--sidebar-w-collapsed);
+  width: var(--sidebar-w-collapsed);
+  padding: 24px 10px 16px;
+  align-items: center;
+}
+.sidebar[data-collapsed="true"] .brand { justify-content: center; padding: 0; }
+.sidebar[data-collapsed="true"] .brand::after { left: 4px; right: 4px; }
+.sidebar[data-collapsed="true"] .sidebar-nav { width: 100%; align-items: center; }
+.sidebar[data-collapsed="true"] .nav-item {
+  justify-content: center; width: 100%; gap: 0; padding: 11px 0;
+}
+.sidebar[data-collapsed="true"] .nav-label { opacity: 0; max-width: 0; pointer-events: none; }
+.sidebar[data-collapsed="true"] .nav-icon { width: auto; }
+.sidebar[data-collapsed="true"] .nav-item.active::before { opacity: 0; }
+.sidebar[data-collapsed="true"] .sidebar-foot { width: 100%; }
+.sidebar[data-collapsed="true"] .theme-toggle { justify-content: center; padding: 10px 0; gap: 0; }
+.sidebar[data-collapsed="true"] .theme-text { opacity: 0; max-width: 0; pointer-events: none; }
+
+/* ------------------------------ 主区域 ------------------------------ */
+.main {
+  flex: 1; min-width: 0;
+  display: flex; justify-content: center;
+  padding: 104px 48px 120px;
+}
+.main-inner { width: 100%; max-width: 540px; }
+
+.toolbar {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  padding: 10px 12px; margin-bottom: 28px;
+  border-radius: var(--radius-md);
+  background: var(--cardBg);
+  border: 1px solid var(--divider);
+  box-shadow: var(--card-shadow);
+  transition: background-color var(--dur) var(--ease-out),
+              border-color var(--dur) var(--ease-out),
+              box-shadow var(--dur) var(--ease-out);
+}
+body.lg-enable .toolbar {
+  background: rgba(var(--lg-bg-rgb), var(--lg-alpha));
+  border: 1px solid var(--lg-border);
+  box-shadow: var(--lg-inset), var(--lg-soft);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(150%);
+  backdrop-filter: blur(var(--lg-blur)) saturate(150%);
+}
+.toolbar-label {
+  font-size: var(--fs-tiny); color: var(--textHint);
+  letter-spacing: .06em;
+}
+.toolbar-select {
+  height: 34px; padding: 0 12px;
+  border: none; outline: none;
+  border-radius: var(--radius-pill);
+  background: var(--inputBg);
+  color: var(--textPrimary);
+  font-size: var(--fs-small); cursor: pointer;
+}
+body.lg-enable .toolbar-select {
+  background: rgba(var(--lg-bg-rgb), calc(var(--lg-alpha) * .75));
+  border: 1px solid var(--lg-border);
+}
+.toolbar-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 34px; padding: 0 14px;
+  border: none; border-radius: var(--radius-pill);
+  background: var(--inputBg);
+  color: var(--textPrimary);
+  font-size: var(--fs-small); cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out);
+}
+.toolbar-btn[aria-pressed="true"] {
+  background: var(--accent); color: var(--btnText);
+}
+body.lg-enable .toolbar-btn {
+  background: rgba(var(--lg-bg-rgb), calc(var(--lg-alpha) * .75));
+  border: 1px solid var(--lg-border);
+}
+body.lg-enable .toolbar-btn[aria-pressed="true"] {
+  background: var(--accent); color: var(--btnText); border-color: transparent;
+}
+.toolbar-range {
+  width: 110px; height: 34px; padding: 0;
+  accent-color: var(--accent); cursor: pointer;
+}
+
+.hero {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  animation: rise .55s var(--ease-out) both;
+}
+.avatar {
+  width: 104px; height: 104px;
+  border-radius: 50%; object-fit: cover;
+  background: var(--inputBg);
+  border: 3px solid var(--avatar-ring);
+  box-shadow: 0 0 0 1px var(--divider),
+              0 14px 34px rgba(var(--accent-rgb), .16);
+  margin-bottom: 26px;
+  transition: border-color var(--dur) var(--ease-out),
+              box-shadow var(--dur) var(--ease-out);
+}
+body.lg-enable .avatar {
+  border-color: var(--lg-border);
+  box-shadow: 0 0 0 1px var(--lg-border),
+              0 14px 34px rgba(var(--lg-pri-rgb), .16);
+}
+.name {
+  font-size: var(--fs-h1); font-weight: 800;
+  letter-spacing: .01em; line-height: 1.25;
+  color: var(--textPrimary);
+}
+.tagline {
+  margin-top: 12px;
+  font-size: var(--fs-sub); color: var(--textSecondary);
+}
+
+.contact-row {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 8px; margin-top: 28px;
+}
+.pill {
+  display: inline-flex; align-items: center;
+  padding: 7px 15px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--divider);
+  background: transparent;
+  color: var(--textSecondary);
+  font-size: var(--fs-small); white-space: nowrap;
+  transition: border-color var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
+}
+body.lg-enable .pill {
+  background: rgba(var(--lg-bg-rgb), calc(var(--lg-alpha) * .65));
+  border-color: var(--lg-border);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+a.pill:active { transform: scale(.97); }
+
+/* ============================================================
+   Weather Globe 区块（新增，插在 Pages 上方）
+   ============================================================ */
+.globe-section {
+  margin-top: 64px;
+  animation: rise .55s var(--ease-out) .06s both;
+}
+
+.globe-form {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.globe-form input[type="text"] {
+  flex: 1 1 200px;
+  background: var(--inputBg);
+  color: var(--textPrimary);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font: inherit;
+  font-size: var(--fs-small);
+  outline: none;
+  transition: border-color var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out);
+}
+body.lg-enable .globe-form input[type="text"] {
+  background: rgba(var(--lg-bg-rgb), calc(var(--lg-alpha) * .75));
+  border-color: var(--lg-border);
+}
+.globe-form input[type="text"]:focus { border-color: var(--accent); }
+
+.globe-form button {
+  background: var(--accent);
+  color: var(--btnText);
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 9px 16px;
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out),
+              opacity var(--dur-fast) var(--ease-out);
+}
+.globe-form button:disabled { opacity: .5; cursor: progress; }
+.globe-form button:active:not(:disabled) { background: var(--accentPressed); }
+
+.globe-status {
+  color: var(--textHint);
+  font-size: var(--fs-tiny);
+  margin: 0 2px 10px;
+  min-height: 1.2em;
+}
+.globe-status.err { color: #d04848; }
+
+.globe-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.globe-pre,
+.globe-weather {
+  margin: 0;
+  padding: 14px;
+  background: var(--cardBg);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  overflow: auto;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas,
+               "Liberation Mono", "Courier New", monospace;
+  letter-spacing: 0;
+  box-shadow: var(--card-shadow);
+  transition: background-color var(--dur) var(--ease-out),
+              border-color var(--dur) var(--ease-out),
+              box-shadow var(--dur) var(--ease-out);
+}
+body.lg-enable .globe-pre,
+body.lg-enable .globe-weather {
+  background: rgba(var(--lg-bg-rgb), var(--lg-alpha));
+  border: 1px solid var(--lg-border);
+  box-shadow: var(--lg-inset), var(--lg-soft);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(150%);
+  backdrop-filter: blur(var(--lg-blur)) saturate(150%);
+}
+
+/* ASCII globe：64 列，13px 宽约 500px，540 容器放得下 */
+#globe {
+  font-size: 13px;
+  line-height: 1.05;
+  color: var(--textSecondary);
+  white-space: pre;
+}
+#globe .pin {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* 天气卡片：11px 等宽，与 globe 对齐 */
+#weather {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--textSecondary);
+  white-space: pre;
+}
+
+/* ------------------------------ Pages ------------------------------ */
+.pages {
+  margin-top: 64px;
+  animation: rise .55s var(--ease-out) .08s both;
+}
+.section-label {
+  padding-left: 2px; margin-bottom: 16px;
+  font-size: var(--fs-tiny); font-weight: 700;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: var(--textHint);
+}
+.page-link {
+  display: flex; align-items: center; gap: 16px;
+  padding: 17px 20px; margin-bottom: 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--divider);
+  background: var(--cardBg);
+  color: var(--textPrimary);
+  box-shadow: var(--card-shadow);
+  transition: transform 240ms var(--ease-out),
+              box-shadow 240ms var(--ease-out),
+              border-color 240ms var(--ease-out),
+              background-color 240ms var(--ease-out);
+}
+body.lg-enable .page-link {
+  background: rgba(var(--lg-bg-rgb), var(--lg-alpha));
+  border: 1px solid var(--lg-border);
+  box-shadow: var(--lg-inset), var(--lg-soft);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(150%);
+  backdrop-filter: blur(var(--lg-blur)) saturate(150%);
+}
+.page-link:last-child { margin-bottom: 0; }
+.page-link:active { transform: scale(.985); }
+
+.page-symbol {
+  flex: 0 0 auto;
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  display: grid; place-items: center;
+  font-size: 16px;
+  background: rgba(var(--accent-rgb), .12);
+  color: var(--accent);
+}
+.page-name {
+  flex: 1;
+  font-size: 15px; font-weight: 700;
+  letter-spacing: .01em;
+}
+.page-arrow {
+  font-size: 15px; color: var(--textHint);
+  transition: transform 240ms var(--ease-out),
+              color 240ms var(--ease-out);
+}
+
+.foot {
+  margin-top: 80px; text-align: center;
+  font-size: var(--fs-tiny); letter-spacing: .14em;
+  color: var(--textHint);
+  animation: rise .55s var(--ease-out) .16s both;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ============================================================================
+   Layer 5 · 悬停
+   ============================================================================ */
+@media (hover: hover) and (pointer: fine) {
+  .sidebar[data-collapsed="true"] .brand:hover .brand-arrow {
+    color: var(--accent); background: var(--emphasis);
+  }
+  .sidebar[data-collapsed="false"] .brand:hover { background: var(--emphasis); }
+  .nav-item:hover { background: var(--emphasis); color: var(--textPrimary); }
+  .nav-item:hover .nav-icon { color: var(--accent); }
+  .theme-toggle:hover {
+    border-color: rgba(var(--accent-rgb), .45);
+    color: var(--accent);
+  }
+  a.pill:hover {
+    border-color: rgba(var(--accent-rgb), .5);
+    color: var(--accent);
+    background: rgba(var(--accent-rgb), .06);
+    transform: translateY(-1px);
+  }
+  .page-link:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow-hover);
+    border-color: rgba(var(--accent-rgb), .35);
+    background: var(--emphasis);
+  }
+  .page-link:hover .page-arrow {
+    transform: translateX(4px); color: var(--accent);
+  }
+}
+
+/* ============================================================================
+   Layer 6 · 响应式
+   ============================================================================ */
+@media (max-width: 860px) {
+  .sb-backdrop { display: block; }
+  .main { padding: 68px 20px 80px 96px; }
+  .sidebar {
+    position: fixed; left: 0; top: 0;
+    height: 100dvh; flex: none;
+    width: var(--sidebar-w-collapsed);
+    padding: 24px 10px 16px; align-items: center;
+    z-index: 200;
+  }
+  .sidebar[data-collapsed="false"] {
+    width: var(--sidebar-w); padding: 24px 20px 20px;
+    align-items: stretch; z-index: 1000;
+    box-shadow: 0 0 44px rgba(0,0,0,.26);
+  }
+  .avatar { width: 88px; height: 88px; margin-bottom: 20px; }
+  .name { font-size: 26px; }
+  .globe-section { margin-top: 48px; }
+  .pages { margin-top: 48px; }
+  .foot { margin-top: 56px; }
+}
+
+/* 更小屏：globe 字号再降一点防横向滚动 */
+@media (max-width: 520px) {
+  #globe { font-size: 11px; }
+  #weather { font-size: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <div class="sb-backdrop" id="sbBackdrop" aria-hidden="true"></div>
+
+  <!-- ============================ 侧栏 ============================ -->
+  <aside class="sidebar" id="sidebar" data-collapsed="false">
+
+    <button class="brand" id="brandToggle" type="button"
+            aria-expanded="true" aria-controls="sidebarNav"
+            aria-label="收起侧栏" title="收起侧栏">
+
+      <span class="brand-arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="16" height="16"
+             fill="none" stroke="currentColor"
+             stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </span>
+
+      <span class="brand-main">
+        <span class="brand-mark" aria-hidden="true">SWB</span>
+        <span class="brand-text">
+          <span class="brand-name">春暖花开</span>
+          <span class="brand-sub">Power By DeepSeek</span>
+        </span>
+      </span>
+    </button>
+
+    <nav class="sidebar-nav" id="sidebarNav">
+      <a class="nav-item active" href="index.html" title="首页">
+        <span class="nav-icon">⌂</span><span class="nav-label">首页</span>
+      </a>
+      <a class="nav-item" href="clock.html" title="Clock">
+        <span class="nav-icon">◎</span><span class="nav-label">Clock</span>
+      </a>
+      <a class="nav-item" href="music.html" title="Music">
+        <span class="nav-icon">◎</span><span class="nav-label">Music</span>
+      </a>
+      <a class="nav-item" href="chat.html" title="Chat">
+        <span class="nav-icon">◎</span><span class="nav-label">Chat</span>
+      </a>
+      <a class="nav-item" href="https://github.com/yinfang949-bit/yinfang949-bit.github.io/" title="新页面">
+        <span class="nav-icon">◎</span><span class="nav-label">此网站仓库</span>
+      </a>
+      <a class="nav-item" href="https://pan.quark.cn/s/3c167a625902" title="新页面">
+        <span class="nav-icon">◎</span><span class="nav-label">我的夸克网盘</span>
+      </a>
+      <a class="nav-item" href="https://1837963282.share.123pan.cn/123pan/h15wTd-PR3Bv" title="新页面">
+        <span class="nav-icon">◎</span><span class="nav-label">我的123网盘</span>
+      </a>
+      <a class="nav-item" href="https://pan.baidu.com/s/1LVCg1t5F76r7Dc9Q5vj3vA" title="新页面">
+        <span class="nav-icon">◎</span><span class="nav-label">我的百度网盘 密码nn4m</span>
+      </a>
+      <a class="nav-item" href="192.168.3.27:5244/local/" title="新页面">
+        <span class="nav-icon">◎</span><span class="nav-label">我的nas网盘（以后搞内网传透）</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <button class="theme-toggle" id="themeToggle" aria-pressed="false" aria-label="切换深浅色">
+        <span class="theme-icon">☾</span>
+        <span class="theme-text">深色模式</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============================ 主区域 ============================ -->
+  <main class="main">
+    <div class="main-inner">
+
+      <!-- 工具栏 -->
+      <div class="toolbar">
+        <label class="toolbar-label" for="themeSelect">主题</label>
+        <select id="themeSelect" class="toolbar-select" aria-label="主题">
+          <option value="reset">暖铜</option>
+          <option value="reset-dark">暖铜 · 深</option>
+          <option value="reset-navy">深海军蓝</option>
+          <option value="purple">柔和紫</option>
+          <option value="green">炫酷绿</option>
+          <option value="blue">科技蓝</option>
+          <option value="bw">极简黑白</option>
+        </select>
+
+        <button class="toolbar-btn" id="glassToggle" aria-pressed="false">玻璃：关</button>
+
+        <label class="toolbar-label" for="alphaRange">透明度</label>
+        <input type="range" id="alphaRange" class="toolbar-range"
+               min="0" max="1" step="0.02" value="0.22">
+      </div>
+
+      <header class="hero">
+        <img class="avatar" src="av.jpg" alt="春暖花开" width="104" height="104">
+        <h1 class="name">春暖花开</h1>
+        <p class="tagline">我是春暖花开，别的……没了</p>
+
+        <div class="contact-row">
+          <a class="pill" href="mailto:2317245083@qq.com">2317245083@qq.com</a>
+          <span class="pill">QQ · 同号</span>
+          <span class="pill">微信 · swfb_otmopera</span>
+        </div>
+      </header>
+
+      <!-- ============================================================
+           Weather Globe 区块（Pages 上方）
+           ============================================================ -->
+      <section class="globe-section">
+        <p class="section-label">天气地球仪</p>
+
+        <form class="globe-form" id="search">
+          <input id="city" type="text"
+                 placeholder="输入城市，如 Tokyo 只能英文
+                 autocomplete="off" />
+          <button type="submit">刷新</button>
+        </form>
+        <div id="status" class="globe-status"></div>
+
+        <div class="globe-panels">
+          <pre id="globe" aria-label="Rotating ASCII globe"></pre>
+          <pre id="weather" aria-label="Weather card"></pre>
+        </div>
+      </section>
+
+      <section class="pages">
+        <p class="section-label">Pages</p>
+
+        <a class="page-link" href="clock.html">
+          <span class="page-symbol">◷</span>
+          <span class="page-name">Clock</span>
+          <span class="page-arrow">→</span>
+        </a>
+
+        <a class="page-link" href="music.html">
+          <span class="page-symbol">♪</span>
+          <span class="page-name">Music</span>
+          <span class="page-arrow">→</span>
+        </a>
+
+        <a class="page-link" href="chat.html">
+          <span class="page-symbol">✉</span>
+          <span class="page-name">Chat</span>
+          <span class="page-arrow">→</span>
+        </a>
+      </section>
+
+      <footer class="foot">Hallo</footer>
+
+    </div>
+  </main>
+
+</div>
+
+<!-- ============================================================
+     主脚本（侧栏 / 主题 / 玻璃 / 透明度）
+     ============================================================ -->
+<script>
+(function () {
+  var root = document.documentElement;
+  var body = document.body;
+
+  var THEMES = ['reset', 'reset-dark', 'reset-navy', 'purple', 'green', 'blue', 'bw'];
+
+  var themeSelect = document.getElementById('themeSelect');
+  var themeBtn = document.getElementById('themeToggle');
+  var themeText = themeBtn.querySelector('.theme-text');
+  var themeIcon = themeBtn.querySelector('.theme-icon');
+  var meta = document.querySelector('meta[name="theme-color"]');
+
+  var glassToggle = document.getElementById('glassToggle');
+  var alphaRange = document.getElementById('alphaRange');
+
+  function applyTheme(theme) {
+    if (THEMES.indexOf(theme) === -1) theme = 'reset';
+    var dark = /-dark$/.test(theme);
+    root.setAttribute('data-theme', theme);
+    themeBtn.setAttribute('aria-pressed', String(dark));
+    themeText.textContent = dark ? '浅色模式' : '深色模式';
+    themeIcon.textContent = dark ? '☀' : '☾';
+    if (themeSelect) themeSelect.value = theme;
+    if (meta) {
+      var bg = getComputedStyle(root).getPropertyValue('--pageBg').trim();
+      if (bg) meta.setAttribute('content', bg);
+    }
+    try { localStorage.setItem('swfb-theme', theme); } catch (e) {}
+  }
+
+  function applyGlass(on) {
+    body.classList.toggle('lg-enable', on);
+    glassToggle.setAttribute('aria-pressed', String(on));
+    glassToggle.textContent = on ? '玻璃：开' : '玻璃：关';
+    try { localStorage.setItem('swfb-glass', on ? '1' : '0'); } catch (e) {}
+  }
+
+  function applyAlpha(value) {
+    var v = Math.min(1, Math.max(0, parseFloat(value)));
+    if (isNaN(v)) v = 0.22;
+    root.style.setProperty('--lg-alpha', String(v));
+    alphaRange.value = String(v);
+    try { localStorage.setItem('swfb-alpha', String(v)); } catch (e) {}
+  }
+
+  var savedTheme = null;
+  try { savedTheme = localStorage.getItem('swfb-theme'); } catch (e) {}
+  applyTheme(savedTheme && THEMES.indexOf(savedTheme) !== -1 ? savedTheme : 'reset');
+
+  var savedGlass = null;
+  try { savedGlass = localStorage.getItem('swfb-glass'); } catch (e) {}
+  applyGlass(savedGlass === '1');
+
+  var savedAlpha = null;
+  try { savedAlpha = localStorage.getItem('swfb-alpha'); } catch (e) {}
+  applyAlpha(savedAlpha !== null ? savedAlpha : '0.22');
+
+  themeSelect.addEventListener('change', function () { applyTheme(themeSelect.value); });
+
+  themeBtn.addEventListener('click', function () {
+    var current = root.getAttribute('data-theme');
+    var next = /-dark$/.test(current) ? 'reset' : 'reset-dark';
+    applyTheme(next);
+  });
+
+  glassToggle.addEventListener('click', function () {
+    applyGlass(!body.classList.contains('lg-enable'));
+  });
+
+  alphaRange.addEventListener('input', function () { applyAlpha(alphaRange.value); });
+
+  /* 侧栏 */
+  var sidebar = document.getElementById('sidebar');
+  var brandBtn = document.getElementById('brandToggle');
+  var backdrop = document.getElementById('sbBackdrop');
+  var SB_KEY = 'swfb-sidebar-collapsed';
+  var isNarrow = window.matchMedia('(max-width: 860px)');
+
+  function syncBackdrop() {
+    if (!backdrop) return;
+    var collapsed = sidebar.getAttribute('data-collapsed') === 'true';
+    backdrop.classList.toggle('visible', isNarrow.matches && !collapsed);
+  }
+
+  function applySidebar(collapsed) {
+    sidebar.setAttribute('data-collapsed', collapsed ? 'true' : 'false');
+    brandBtn.setAttribute('aria-expanded', String(!collapsed));
+    brandBtn.setAttribute('aria-label', collapsed ? '展开侧栏' : '收起侧栏');
+    brandBtn.title = collapsed ? '展开侧栏' : '收起侧栏';
+    syncBackdrop();
+  }
+
+  var savedSb = null;
+  try { savedSb = localStorage.getItem(SB_KEY); } catch (e) {}
+
+  if (isNarrow.matches) {
+    applySidebar(savedSb === null ? true : savedSb === 'true');
+  } else {
+    applySidebar(savedSb === 'true');
+  }
+
+  brandBtn.addEventListener('click', function () {
+    var next = sidebar.getAttribute('data-collapsed') !== 'true';
+    applySidebar(next);
+    try { localStorage.setItem(SB_KEY, String(next)); } catch (e) {}
+  });
+
+  if (backdrop) {
+    backdrop.addEventListener('click', function () {
+      applySidebar(true);
+      try { localStorage.setItem(SB_KEY, 'true'); } catch (e) {}
+    });
+  }
+
+  if (isNarrow.addEventListener) isNarrow.addEventListener('change', syncBackdrop);
+  else if (isNarrow.addListener) isNarrow.addListener(syncBackdrop);
+  window.addEventListener('resize', syncBackdrop);
+})();
+</script>
+
+<!-- ============================================================
+     globe.js（内联）
+     ============================================================ -->
+<script>
+(function () {
+  'use strict';
+
+  const COLS = 64;
+  const ROWS = 32;
+  const OCEAN = '.';
+  const LAND_CH = '*';
+  const PIN_CH = '●';
+
+  const RECTS = [
+    [49, 70, -168, -52], [30, 49, -125, -66], [15, 30, -110, -80],
+    [8, 22, -92, -77], [17, 23, -85, -68],
+    [-12, 12, -82, -50], [-35, -12, -75, -38], [-55, -35, -73, -55],
+    [60, 83, -55, -20],
+    [36, 60, -10, 30], [60, 71, 5, 60],
+    [12, 36, -17, 35], [-5, 12, -10, 45], [-35, -5, 10, 42],
+    [12, 40, 35, 60],
+    [50, 75, 30, 180], [40, 50, 30, 140],
+    [25, 50, 60, 130], [8, 25, 70, 100],
+    [-10, 22, 95, 140],
+    [30, 46, 126, 146],
+    [-39, -11, 113, 154],
+    [-47, -34, 166, 178],
+    [-90, -66, -180, 180],
+  ];
+
+  const LANDMAP = new Uint8Array(360 * 180);
+  (function bake() {
+    for (let la = 0; la < 180; la++) {
+      const lat = la - 90 + 0.5;
+      for (let lo = 0; lo < 360; lo++) {
+        const lon = lo - 180 + 0.5;
+        for (let i = 0; i < RECTS.length; i++) {
+          const r = RECTS[i];
+          if (lat >= r[0] && lat <= r[1] && lon >= r[2] && lon <= r[3]) {
+            LANDMAP[la * 360 + lo] = 1;
+            break;
+          }
+        }
+      }
+    }
+  })();
+
+  function isLand(lat, lon) {
+    let la = Math.floor(lat + 90);
+    if (la < 0) la = 0; else if (la > 179) la = 179;
+    let lo = Math.floor(lon + 180);
+    lo = ((lo % 360) + 360) % 360;
+    return LANDMAP[la * 360 + lo] === 1;
+  }
+
+  const DEG = Math.PI / 180;
+
+  function project(lat, lon, rot) {
+    const la = lat * DEG;
+    const lo = lon * DEG - rot;
+    const cla = Math.cos(la);
+    return { x: cla * Math.sin(lo), y: Math.sin(la), z: cla * Math.cos(lo) };
+  }
+
+  function geom() {
+    const cx = (COLS - 1) / 2;
+    const cy = (ROWS - 1) / 2;
+    const rx = Math.min(cx, cy * 2) + 0.5;
+    return { cx, cy, rx, ry: rx / 2 };
+  }
+
+  function renderFrame(rot, pin) {
+    const { cx, cy, rx, ry } = geom();
+
+    const buf = new Array(ROWS);
+    for (let r = 0; r < ROWS; r++) buf[r] = new Array(COLS).fill(' ');
+
+    for (let row = 0; row < ROWS; row++) {
+      for (let col = 0; col < COLS; col++) {
+        const nx = (col - cx) / rx;
+        const ny = -(row - cy) / ry;
+        const r2 = nx * nx + ny * ny;
+        if (r2 > 1) continue;
+        const z = Math.sqrt(1 - r2);
+        const lat = Math.asin(ny) / DEG;
+        let lon = Math.atan2(nx, z) / DEG + rot / DEG;
+        lon = ((lon + 180) % 360 + 360) % 360 - 180;
+        buf[row][col] = isLand(lat, lon) ? LAND_CH : OCEAN;
+      }
+    }
+
+    let pinRow = -1, pinCol = -1;
+    if (pin) {
+      const p = project(pin.lat, pin.lon, rot);
+      if (p.z > 0) {
+        const g = geom();
+        const row = Math.round(g.cy - p.y * g.ry);
+        const col = Math.round(g.cx + p.x * g.rx);
+        if (row >= 0 && row < ROWS && col >= 0 && col < COLS) {
+          pinRow = row; pinCol = col;
+        }
+      }
+    }
+
+    let out = '';
+    for (let row = 0; row < ROWS; row++) {
+      for (let col = 0; col < COLS; col++) {
+        if (row === pinRow && col === pinCol) {
+          out += '<span class="pin">' + PIN_CH + '</span>';
+        } else {
+          out += buf[row][col];
+        }
+      }
+      out += '\n';
+    }
+    return out;
+  }
+
+  let rot = 0, pin = null, raf = null, target = null;
+  const reduceMotion = window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function tick() {
+    if (!reduceMotion) {
+      rot += 0.012;
+      if (rot > Math.PI * 2) rot -= Math.PI * 2;
+    }
+    if (target) {
+      const html = renderFrame(rot, pin);
+      if (pin) target.innerHTML = html;
+      else target.textContent = html;
+    }
+    raf = requestAnimationFrame(tick);
+  }
+
+  window.AsciiGlobe = {
+    mount(el) {
+      target = el;
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(tick);
+    },
+    unmount() {
+      if (raf) cancelAnimationFrame(raf);
+      raf = null; target = null;
+    },
+    setPin(lat, lon) { pin = { lat, lon }; },
+    clearPin() { pin = null; },
+  };
+})();
+</script>
+
+<!-- ============================================================
+     app.js（内联）
+     ============================================================ -->
+<script>
+(function () {
+  'use strict';
+
+  const $ = (id) => document.getElementById(id);
+  const globeEl = $('globe');
+  const weatherEl = $('weather');
+  const statusEl = $('status');
+  const form = $('search');
+  const cityInput = $('city');
+  const button = form.querySelector('button');
+
+  const WMO = {
+    0:  ['☀', 'Clear sky'],
+    1:  ['☀', 'Mainly clear'],
+    2:  ['⛅', 'Partly cloudy'],
+    3:  ['☁', 'Overcast'],
+    45: ['🌫', 'Fog'],
+    48: ['🌫', 'Depositing rime fog'],
+    51: ['☂', 'Light drizzle'],
+    53: ['☂', 'Moderate drizzle'],
+    55: ['☂', 'Dense drizzle'],
+    56: ['☂', 'Light freezing drizzle'],
+    57: ['☂', 'Dense freezing drizzle'],
+    61: ['☂', 'Light rain'],
+    63: ['☂', 'Moderate rain'],
+    65: ['☂', 'Heavy rain'],
+    66: ['☂', 'Light freezing rain'],
+    67: ['☂', 'Heavy freezing rain'],
+    71: ['❄', 'Light snow'],
+    73: ['❄', 'Moderate snow'],
+    75: ['❄', 'Heavy snow'],
+    77: ['❄', 'Snow grains'],
+    80: ['☂', 'Rain showers'],
+    81: ['☂', 'Heavy rain showers'],
+    82: ['☂', 'Violent rain showers'],
+    85: ['❄', 'Snow showers'],
+    86: ['❄', 'Heavy snow showers'],
+    95: ['⛈', 'Thunderstorm'],
+    96: ['⛈', 'Thunderstorm with hail'],
+    99: ['⛈', 'Thunderstorm with heavy hail'],
+  };
+
+  function setStatus(msg, isErr) {
+    statusEl.textContent = msg || '';
+    statusEl.classList.toggle('err', !!isErr);
+  }
+
+  function pad(s, n) {
+    s = String(s);
+    return s.length >= n ? s : s + ' '.repeat(n - s.length);
+  }
+
+  function fmtCoord(lat, lon) {
+    const ns = lat >= 0 ? 'N' : 'S';
+    const ew = lon >= 0 ? 'E' : 'W';
+    return `${Math.abs(lat).toFixed(2)}°${ns}  ${Math.abs(lon).toFixed(2)}°${ew}`;
+  }
+
+  function renderCard(place, weather) {
+    const [glyph, label] = WMO[weather.weather_code] || ['·', 'Unknown'];
+    const lines = [
+      '┌──────────────────────────────┐',
+      `│  ${pad(place.name, 28)}│`,
+      `│  ${pad(place.country || '', 28)}│`,
+      '├──────────────────────────────┤',
+      `│  ${glyph}  ${pad(label, 25)}│`,
+      `│  ${pad(weather.temperature_2m + '°C', 28)}│`,
+      `│  ${pad('Wind  ' + weather.wind_speed_10m + ' km/h', 28)}│`,
+      `│  ${pad('RH    ' + weather.relative_humidity_2m + '%', 28)}│`,
+      '├──────────────────────────────┤',
+      `│  ${pad(fmtCoord(place.latitude, place.longitude), 28)}│`,
+      '└──────────────────────────────┘',
+    ];
+    weatherEl.textContent = lines.join('\n');
+  }
+
+  async function geocode(name) {
+    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=1&language=en&format=json`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('Geocoding failed');
+    const data = await r.json();
+    if (!data.results || data.results.length === 0) {
+      throw new Error(`No place found for "${name}"`);
+    }
+    const hit = data.results[0];
+    return {
+      name: hit.name,
+      country: hit.country || '',
+      latitude: hit.latitude,
+      longitude: hit.longitude,
+    };
+  }
+
+  async function getWeather(lat, lon) {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}` +
+      `&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m`;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('Weather lookup failed');
+    const data = await r.json();
+    if (!data.current) throw new Error('No current weather data');
+    return data.current;
+  }
+
+  async function locate(name) {
+    button.disabled = true;
+    setStatus('Looking up ' + name + '…', false);
+    try {
+      const place = await geocode(name);
+      const weather = await getWeather(place.latitude, place.longitude);
+      window.AsciiGlobe.setPin(place.latitude, place.longitude);
+      renderCard(place, weather);
+      setStatus(`${place.name}${place.country ? ', ' + place.country : ''} — updated.`, false);
+    } catch (e) {
+      setStatus(e.message || 'Something went wrong.', true);
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const v = cityInput.value.trim();
+    if (!v) return;
+    locate(v);
+  });
+
+  window.AsciiGlobe.mount(globeEl);
+  cityInput.value = 'Paris';
+  locate('Paris');
+})();
+</script>
+
+</body>
+</html>
