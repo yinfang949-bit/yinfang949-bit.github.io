@@ -317,10 +317,72 @@ body.lg-enable .brand::after { background: var(--lg-border); }
               background-color var(--dur-fast) var(--ease-out);
 }
 
+/* ------------------------------ 导航（多面板） ------------------------------ */
 .sidebar-nav {
-  display: flex; flex-direction: column; gap: 2px;
+  position: relative;
   flex: 1; min-height: 0;
+  overflow: hidden;
 }
+
+.nav-panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 1px;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(100%);
+  transition:
+    transform 340ms var(--ease-out),
+    opacity 260ms var(--ease-out),
+    visibility 0s 340ms;
+}
+.nav-panel[data-state="active"] {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+  transition:
+    transform 340ms var(--ease-out),
+    opacity 260ms var(--ease-out),
+    visibility 0s;
+}
+.nav-panel[data-state="left"] {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-100%);
+  transition:
+    transform 340ms var(--ease-out),
+    opacity 260ms var(--ease-out),
+    visibility 0s 340ms;
+}
+
+.nav-panel-title {
+  padding: 2px 14px 8px;
+  font-size: var(--fs-tiny);
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--textHint);
+  white-space: nowrap;
+}
+
+.sidebar-nav button {
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 .nav-item {
   position: relative; display: flex; align-items: center; gap: 12px;
   padding: 11px 14px;
@@ -332,6 +394,7 @@ body.lg-enable .brand::after { background: var(--lg-border); }
               padding var(--dur-slide) var(--ease-out),
               gap var(--dur-slide) var(--ease-out);
 }
+button.nav-item { width: 100%; }
 .nav-icon {
   width: 20px; flex: 0 0 auto; text-align: center;
   font-size: 15px; color: var(--textHint);
@@ -351,6 +414,23 @@ body.lg-enable .brand::after { background: var(--lg-border); }
 .nav-item.active .nav-icon { color: var(--accent); }
 body.lg-enable .nav-item:hover { background: rgba(var(--lg-pri-rgb), .16); }
 body.lg-enable .nav-item.active { background: rgba(var(--lg-pri-rgb), .20); }
+
+.nav-chevron {
+  margin-left: auto;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--textHint);
+  transition: color var(--dur-fast) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
+}
+.nav-item.has-children:hover .nav-chevron { color: var(--accent); transform: translateX(2px); }
+
+.nav-item.go-back {
+  color: var(--textHint);
+  font-size: var(--fs-small);
+  margin-bottom: 2px;
+}
+.nav-item.go-back .nav-icon { font-size: 17px; }
 
 .sidebar-foot {
   flex-shrink: 0; padding-top: var(--sp-4);
@@ -400,12 +480,14 @@ body.lg-enable .theme-toggle {
 }
 .sidebar[data-collapsed="true"] .brand { justify-content: center; padding: 0; }
 .sidebar[data-collapsed="true"] .brand::after { left: 4px; right: 4px; }
-.sidebar[data-collapsed="true"] .sidebar-nav { width: 100%; align-items: center; }
+.sidebar[data-collapsed="true"] .sidebar-nav { width: 100%; }
 .sidebar[data-collapsed="true"] .nav-item {
   justify-content: center; width: 100%; gap: 0; padding: 11px 0;
 }
 .sidebar[data-collapsed="true"] .nav-label { opacity: 0; max-width: 0; pointer-events: none; }
 .sidebar[data-collapsed="true"] .nav-icon { width: auto; }
+.sidebar[data-collapsed="true"] .nav-chevron { display: none; }
+.sidebar[data-collapsed="true"] .nav-panel-title { display: none; }
 .sidebar[data-collapsed="true"] .nav-item.active::before { opacity: 0; }
 .sidebar[data-collapsed="true"] .sidebar-foot { width: 100%; }
 .sidebar[data-collapsed="true"] .theme-toggle { justify-content: center; padding: 10px 0; gap: 0; }
@@ -534,7 +616,7 @@ body.lg-enable .pill {
 a.pill:active { transform: scale(.97); }
 
 /* ============================================================
-   Weather Globe 区块（新增，插在 Pages 上方）
+   Weather Globe 区块
    ============================================================ */
 .globe-section {
   margin-top: 64px;
@@ -619,7 +701,6 @@ body.lg-enable .globe-weather {
   backdrop-filter: blur(var(--lg-blur)) saturate(150%);
 }
 
-/* ASCII globe：64 列，13px 宽约 500px，540 容器放得下 */
 #globe {
   font-size: 13px;
   line-height: 1.05;
@@ -631,7 +712,6 @@ body.lg-enable .globe-weather {
   font-weight: 700;
 }
 
-/* 天气卡片：11px 等宽，与 globe 对齐 */
 #weather {
   font-size: 11px;
   line-height: 1.5;
@@ -761,7 +841,6 @@ body.lg-enable .page-link {
   .foot { margin-top: 56px; }
 }
 
-/* 更小屏：globe 字号再降一点防横向滚动 */
 @media (max-width: 520px) {
   #globe { font-size: 11px; }
   #weather { font-size: 10px; }
@@ -807,36 +886,97 @@ body.lg-enable .page-link {
     </button>
 
     <nav class="sidebar-nav" id="sidebarNav">
-      <a class="nav-item active" href="index.html" title="首页">
-        <span class="nav-icon">⌂</span><span class="nav-label">首页</span>
-      </a>
-      <a class="nav-item" href="clock.html" title="Clock">
-        <span class="nav-icon">◎</span><span class="nav-label">Clock</span>
-      </a>
-      <a class="nav-item" href="music.html" title="Music">
-        <span class="nav-icon">◎</span><span class="nav-label">Music</span>
-      </a>
-      <a class="nav-item" href="chat.html" title="Chat">
-        <span class="nav-icon">◎</span><span class="nav-label">Chat</span>
-      </a>
-      <a class="nav-item" href="https://github.com/yinfang949-bit/yinfang949-bit.github.io/" title="新页面">
-        <span class="nav-icon">◎</span><span class="nav-label">此网站仓库</span>
-      </a>
-      <a class="nav-item" href="https://pan.quark.cn/s/3c167a625902" title="新页面">
-        <span class="nav-icon">◎</span><span class="nav-label">我的夸克网盘</span>
-      </a>
-      <a class="nav-item" href="https://1837963282.share.123pan.cn/123pan/h15wTd-PR3Bv" title="新页面">
-        <span class="nav-icon">◎</span><span class="nav-label">我的123网盘</span>
-      </a>
-      <a class="nav-item" href="https://pan.baidu.com/s/1LVCg1t5F76r7Dc9Q5vj3vA" title="新页面">
-        <span class="nav-icon">◎</span><span class="nav-label">我的百度网盘 密码nn4m</span>
-      </a>
-      <a class="nav-item" href="192.168.3.27:5244/local/" title="新页面">
-        <span class="nav-icon">◎</span><span class="nav-label">我的nas网盘（以后搞内网传透）</span>
-      </a>
-       <a class="nav-item" href="https://space.bilibili.com/1866326845/favlist?fid=1613513845&ftype=create" title="新页面">
-        <span class="nav-icon">◎</span><span class="nav-label">我的b站主页</span>
-      </a>
+
+      <!-- 主菜单 -->
+      <div class="nav-panel" data-panel="root" data-state="active">
+        <a class="nav-item active" href="index.html" title="首页">
+          <span class="nav-icon">⌂</span><span class="nav-label">首页</span>
+        </a>
+
+        <button class="nav-item has-children" type="button"
+                data-open-panel="drive" title="我的网盘">
+          <span class="nav-icon">☁</span>
+          <span class="nav-label">我的网盘</span>
+          <span class="nav-chevron" aria-hidden="true">›</span>
+        </button>
+
+        <button class="nav-item has-children" type="button"
+                data-open-panel="pages" title="网页">
+          <span class="nav-icon">◈</span>
+          <span class="nav-label">网页</span>
+          <span class="nav-chevron" aria-hidden="true">›</span>
+        </button>
+
+        <button class="nav-item has-children" type="button"
+                data-open-panel="misc" title="杂项">
+          <span class="nav-icon">✦</span>
+          <span class="nav-label">杂项</span>
+          <span class="nav-chevron" aria-hidden="true">›</span>
+        </button>
+      </div>
+
+      <!-- 我的网盘 -->
+      <div class="nav-panel" data-panel="drive" data-state="right" aria-hidden="true" inert>
+        <button class="nav-item go-back" type="button" data-close-panel>
+          <span class="nav-icon">‹</span><span class="nav-label">返回</span>
+        </button>
+        <p class="nav-panel-title">我的网盘</p>
+
+        <a class="nav-item" href="https://pan.quark.cn/s/3c167a625902"
+           target="_blank" rel="noopener" title="夸克网盘">
+          <span class="nav-icon">◎</span><span class="nav-label">夸克网盘</span>
+        </a>
+        <a class="nav-item" href="https://1837963282.share.123pan.cn/123pan/h15wTd-PR3Bv"
+           target="_blank" rel="noopener" title="123 网盘">
+          <span class="nav-icon">◎</span><span class="nav-label">123 网盘</span>
+        </a>
+        <a class="nav-item" href="https://pan.baidu.com/s/1LVCg1t5F76r7Dc9Q5vj3vA"
+           target="_blank" rel="noopener" title="百度网盘，密码 nn4m">
+          <span class="nav-icon">◎</span><span class="nav-label">百度网盘 · nn4m</span>
+        </a>
+        <a class="nav-item" href="http://192.168.3.27:5244/local/"
+           target="_blank" rel="noopener" title="NAS 网盘（内网）">
+          <span class="nav-icon">◎</span><span class="nav-label">NAS 网盘</span>
+        </a>
+      </div>
+
+      <!-- 网页 -->
+      <div class="nav-panel" data-panel="pages" data-state="right" aria-hidden="true" inert>
+        <button class="nav-item go-back" type="button" data-close-panel>
+          <span class="nav-icon">‹</span><span class="nav-label">返回</span>
+        </button>
+        <p class="nav-panel-title">网页</p>
+
+        <a class="nav-item" href="clock.html" title="Clock">
+          <span class="nav-icon">◷</span><span class="nav-label">Clock</span>
+        </a>
+        <a class="nav-item" href="chat.html" title="Chat">
+          <span class="nav-icon">✉</span><span class="nav-label">Chat</span>
+        </a>
+        <a class="nav-item" href="music.html" title="Music">
+          <span class="nav-icon">♪</span><span class="nav-label">Music</span>
+        </a>
+      </div>
+
+      <!-- 杂项 -->
+      <div class="nav-panel" data-panel="misc" data-state="right" aria-hidden="true" inert>
+        <button class="nav-item go-back" type="button" data-close-panel>
+          <span class="nav-icon">‹</span><span class="nav-label">返回</span>
+        </button>
+        <p class="nav-panel-title">杂项</p>
+
+        <a class="nav-item"
+           href="https://space.bilibili.com/1866326845/favlist?fid=1613513845&ftype=create"
+           target="_blank" rel="noopener" title="我的 B 站主页">
+          <span class="nav-icon">◎</span><span class="nav-label">我的 B 站主页</span>
+        </a>
+        <a class="nav-item"
+           href="https://github.com/yinfang949-bit/yinfang949-bit.github.io/"
+           target="_blank" rel="noopener" title="此网站仓库">
+          <span class="nav-icon">◎</span><span class="nav-label">此网站仓库</span>
+        </a>
+      </div>
+
     </nav>
 
     <div class="sidebar-foot">
@@ -884,14 +1024,14 @@ body.lg-enable .page-link {
       </header>
 
       <!-- ============================================================
-           Weather Globe 区块（Pages 上方）
+           Weather Globe 区块
            ============================================================ -->
       <section class="globe-section">
         <p class="section-label">天气地球仪</p>
 
         <form class="globe-form" id="search">
           <input id="city" type="text"
-                 placeholder="输入城市，如 Tokyo 只能英文
+                 placeholder="输入城市，如 Tokyo（仅英文）"
                  autocomplete="off" />
           <button type="submit">刷新</button>
         </form>
@@ -1007,12 +1147,58 @@ body.lg-enable .page-link {
 
   alphaRange.addEventListener('input', function () { applyAlpha(alphaRange.value); });
 
-  /* 侧栏 */
+  /* ------------------------------ 侧栏 ------------------------------ */
   var sidebar = document.getElementById('sidebar');
   var brandBtn = document.getElementById('brandToggle');
   var backdrop = document.getElementById('sbBackdrop');
   var SB_KEY = 'swfb-sidebar-collapsed';
   var isNarrow = window.matchMedia('(max-width: 860px)');
+
+  /* 子面板导航 */
+  var navEl = document.getElementById('sidebarNav');
+  var panels = Array.prototype.slice.call(navEl.querySelectorAll('.nav-panel'));
+
+  function setPanelState(panel, state) {
+    panel.setAttribute('data-state', state);
+    if (state === 'active') {
+      panel.removeAttribute('aria-hidden');
+      panel.removeAttribute('inert');
+    } else {
+      panel.setAttribute('aria-hidden', 'true');
+      panel.setAttribute('inert', '');
+    }
+  }
+
+  function openPanel(name) {
+    panels.forEach(function (p) {
+      var key = p.getAttribute('data-panel');
+      if (key === name) setPanelState(p, 'active');
+      else if (key === 'root') setPanelState(p, 'left');
+      else setPanelState(p, 'right');
+    });
+  }
+
+  function closePanel() { openPanel('root'); }
+
+  openPanel('root');
+
+  navEl.addEventListener('click', function (e) {
+    var opener = e.target.closest ? e.target.closest('[data-open-panel]') : null;
+    if (opener) {
+      e.preventDefault();
+      if (sidebar.getAttribute('data-collapsed') === 'true') {
+        applySidebar(false);
+        try { localStorage.setItem(SB_KEY, 'false'); } catch (err) {}
+      }
+      openPanel(opener.getAttribute('data-open-panel'));
+      return;
+    }
+    var closer = e.target.closest ? e.target.closest('[data-close-panel]') : null;
+    if (closer) {
+      e.preventDefault();
+      closePanel();
+    }
+  });
 
   function syncBackdrop() {
     if (!backdrop) return;
@@ -1040,12 +1226,14 @@ body.lg-enable .page-link {
   brandBtn.addEventListener('click', function () {
     var next = sidebar.getAttribute('data-collapsed') !== 'true';
     applySidebar(next);
+    if (next) closePanel();
     try { localStorage.setItem(SB_KEY, String(next)); } catch (e) {}
   });
 
   if (backdrop) {
     backdrop.addEventListener('click', function () {
       applySidebar(true);
+      closePanel();
       try { localStorage.setItem(SB_KEY, 'true'); } catch (e) {}
     });
   }
