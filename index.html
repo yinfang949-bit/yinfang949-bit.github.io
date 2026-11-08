@@ -866,6 +866,149 @@ body.lg-enable .globe-weather {
   color: var(--textHint);
 }
 
+/* ============================================================
+   News 区块（政治 BBC + 科技 Hacker News）
+   与天气地球仪完全同源：同一套令牌 / 玻璃 / 圆角 / 阴影
+   ============================================================ */
+.news-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 64px;
+  padding: 16px;
+  background: var(--cardBg);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  box-shadow: var(--card-shadow);
+  animation: rise .55s var(--ease-out) .07s both;
+  transition: background-color var(--dur) var(--ease-out),
+              border-color var(--dur) var(--ease-out),
+              box-shadow var(--dur) var(--ease-out);
+}
+body.lg-enable .news-section {
+  background: rgba(var(--lg-bg-rgb), var(--lg-alpha));
+  border: 1px solid var(--lg-border);
+  box-shadow: var(--lg-inset), var(--lg-soft);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(150%);
+  backdrop-filter: blur(var(--lg-blur)) saturate(150%);
+}
+
+.news-label {
+  margin: 0;
+  font-size: var(--fs-tiny);
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--textSecondary);
+}
+
+.news-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.news-btn {
+  height: 34px;
+  padding: 0 16px;
+  background: var(--accent);
+  color: var(--btnText);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out),
+              opacity var(--dur-fast) var(--ease-out);
+}
+.news-btn:active:not(:disabled) { background: var(--accentPressed); }
+.news-btn:disabled { opacity: .45; cursor: default; }
+
+.news-group {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 16px;
+  background: var(--cardBg);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--dur) var(--ease-out),
+              border-color var(--dur) var(--ease-out);
+}
+body.lg-enable .news-group {
+  background: rgba(var(--lg-bg-rgb), calc(var(--lg-alpha) * .8));
+  border: 1px solid var(--lg-border);
+  box-shadow: var(--lg-inset), var(--lg-soft);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(150%);
+  backdrop-filter: blur(var(--lg-blur)) saturate(150%);
+}
+
+.news-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding-bottom: 8px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--divider);
+}
+.news-head b,
+.news-head span {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas,
+               "Liberation Mono", "Courier New", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+.news-head b { color: var(--textSecondary); }
+.news-head span { color: var(--textHint); }
+
+.news-list { list-style: none; margin: 0; padding: 0; }
+
+.news-item {
+  padding: 9px 0;
+  border-bottom: 1px dashed var(--divider);
+}
+.news-item:first-child { padding-top: 2px; }
+.news-item:last-child { padding-bottom: 0; border-bottom: none; }
+
+.news-title {
+  font-size: var(--fs-small);
+  line-height: 1.55;
+  color: var(--textPrimary);
+}
+.news-title a {
+  color: var(--textPrimary);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.news-title a:hover { color: var(--accent); text-decoration: underline; }
+
+.news-meta {
+  margin-top: 2px;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas,
+               "Liberation Mono", "Courier New", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  color: var(--textHint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.news-empty {
+  padding: 6px 0;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas,
+               "Liberation Mono", "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: var(--textHint);
+}
+
 /* ------------------------------ Pages ------------------------------ */
 .pages {
   margin-top: 64px;
@@ -984,6 +1127,7 @@ body.lg-enable .page-link {
   .avatar { width: 88px; height: 88px; margin-bottom: 20px; }
   .name { font-size: 26px; }
   .globe-section { margin-top: 48px; }
+  .news-section { margin-top: 48px; }
   .pages { margin-top: 48px; }
   .foot { margin-top: 56px; }
 }
@@ -1196,6 +1340,33 @@ body.lg-enable .page-link {
             <p class="gw-empty">正在获取天气数据…</p>
           </div>
         </div>
+      </section>
+
+      <!-- ============================================================
+           News 区块（政治 BBC Politics + 科技 Hacker News）
+           ============================================================ -->
+      <section class="news-section" aria-label="政治与科技新闻">
+        <p class="news-label">// 新闻资讯 · POLITICS &amp; TECH</p>
+
+        <div class="news-toolbar">
+          <button class="news-btn" id="translateBtn" type="button">翻译成中文</button>
+        </div>
+
+        <div class="news-group">
+          <p class="news-head"><b>政治 · BBC POLITICS</b><span>RSS</span></p>
+          <ul class="news-list" id="politics">
+            <li class="news-empty">LOADING…</li>
+          </ul>
+        </div>
+
+        <div class="news-group">
+          <p class="news-head"><b>科技 · HACKER NEWS</b><span>ALGOLIA</span></p>
+          <ul class="news-list" id="technology">
+            <li class="news-empty">LOADING…</li>
+          </ul>
+        </div>
+
+        <p class="globe-status" id="newsStatus">&gt; 待命</p>
       </section>
 
       <section class="pages">
@@ -1729,6 +1900,150 @@ body.lg-enable .page-link {
   window.AsciiGlobe.mount(globeEl);
   cityInput.value = 'Shanghai';
   locate('Shanghai');
+})();
+</script>
+
+<!-- ============================================================
+     news.js（内联）· 政治 BBC Politics + 科技 Hacker News + 中文翻译
+     ============================================================ -->
+<script>
+(function () {
+  'use strict';
+
+  var statusEl = document.getElementById('newsStatus');
+  var translateBtn = document.getElementById('translateBtn');
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function setStatus(msg, isErr) {
+    if (!statusEl) return;
+    statusEl.textContent = '> ' + msg;
+    statusEl.className = isErr ? 'globe-status err' : 'globe-status';
+  }
+
+  /* ========== 政治：BBC Politics RSS → rss2json 代理 ========== */
+  async function loadPolitics() {
+    var list = document.getElementById('politics');
+    list.innerHTML = '<li class="news-empty">LOADING…</li>';
+
+    var rssUrl = 'https://feeds.bbci.co.uk/news/politics/rss.xml';
+    var url = 'https://api.rss2json.com/v1/api.json?rss_url=' +
+              encodeURIComponent(rssUrl) + '&count=10';
+
+    try {
+      var res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      var data = await res.json();
+
+      if (data.status !== 'ok' || !data.items || data.items.length === 0) {
+        list.innerHTML = '<li class="news-empty">NO DATA · 暂无政治新闻</li>';
+        return;
+      }
+
+      list.innerHTML = data.items.map(function (item) {
+        var pub = item.pubDate ? String(item.pubDate).slice(0, 16) : '';
+        return '<li class="news-item">' +
+                 '<div class="news-title">' +
+                   '<a href="' + esc(item.link) + '" target="_blank" rel="noopener">' +
+                     esc(item.title) +
+                   '</a>' +
+                 '</div>' +
+                 '<div class="news-meta">BBC POLITICS · ' + esc(pub) + '</div>' +
+               '</li>';
+      }).join('');
+    } catch (err) {
+      list.innerHTML = '<li class="news-empty">加载失败：' + esc(err.message) + '</li>';
+      console.error('[BBC Politics]', err);
+    }
+  }
+
+  /* ========== 科技：Hacker News（Algolia API） ========== */
+  async function loadTechnology() {
+    var list = document.getElementById('technology');
+    list.innerHTML = '<li class="news-empty">LOADING…</li>';
+
+    var url = 'https://hn.algolia.com/api/v1/search?query=technology&tags=story&hitsPerPage=10';
+
+    try {
+      var res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+
+      var data = await res.json();
+      var hits = (data.hits || []).filter(function (h) { return h.title; });
+
+      if (hits.length === 0) {
+        list.innerHTML = '<li class="news-empty">NO DATA · 暂无科技新闻</li>';
+        return;
+      }
+
+      list.innerHTML = hits.map(function (h) {
+        // 空字符串 url 也回退到 HN 讨论页
+        var storyUrl = (h.url && h.url.trim())
+          ? h.url.trim()
+          : 'https://news.ycombinator.com/item?id=' + h.objectID;
+
+        var meta = (h.points || 0) + ' 分 · ' +
+                   (h.num_comments || 0) + ' 条评论 · HACKER NEWS';
+
+        return '<li class="news-item">' +
+                 '<div class="news-title">' +
+                   '<a href="' + esc(storyUrl) + '" target="_blank" rel="noopener">' +
+                     esc(h.title) +
+                   '</a>' +
+                 '</div>' +
+                 '<div class="news-meta">' + esc(meta) + '</div>' +
+               '</li>';
+      }).join('');
+    } catch (err) {
+      list.innerHTML = '<li class="news-empty">加载失败：' + esc(err.message) + '</li>';
+      console.error('[HN]', err);
+    }
+  }
+
+  /* ========== 翻译（MyMemory 免费接口） ========== */
+  async function translateText(text) {
+    var url = 'https://api.mymemory.translated.net/get?q=' +
+              encodeURIComponent(text) + '&langpair=en|zh-CN';
+    var res = await fetch(url);
+    if (!res.ok) throw new Error('翻译请求失败');
+    var data = await res.json();
+    return (data.responseData && data.responseData.translatedText) || text;
+  }
+
+  translateBtn.addEventListener('click', async function () {
+    translateBtn.disabled = true;
+    translateBtn.textContent = '翻译中…';
+
+    var links = document.querySelectorAll('.news-title a');
+    for (var i = 0; i < links.length; i++) {
+      var a = links[i];
+      if (a.dataset.translated) continue;
+      var original = a.textContent;
+      try {
+        var zh = await translateText(original);
+        a.textContent = zh;
+        a.dataset.translated = '1';
+      } catch (e) {
+        console.warn('翻译失败：', original, e);
+      }
+      await new Promise(function (r) { setTimeout(r, 300); }); // 避免触发频率限制
+    }
+
+    translateBtn.textContent = '已翻译';
+    translateBtn.disabled = false;
+  });
+
+  /* ========== 并行加载 ========== */
+  setStatus('加载中…');
+  Promise.allSettled([loadPolitics(), loadTechnology()]).then(function () {
+    setStatus('已更新 · BBC Politics（rss2json） + Hacker News');
+  });
 })();
 </script>
 
